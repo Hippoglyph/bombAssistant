@@ -9,6 +9,7 @@ namespace BombAssistant
 {
     class Listener
     {
+        public static String BLACK = "black";
         public static String RED = "red";
         public static String BLUE = "blue";
         public static String YELLOW = "yellow";
@@ -30,6 +31,9 @@ namespace BombAssistant
 
         public static int BUTTONCOMMAND = 3;
         private static String BUTTONSTRING = "button";
+
+        public static int WIRECOMMAND = 4;
+        private static String WIRESTRING = "wires";
 
         SpeechRecognitionEngine rec;
         Assistant assistant;
@@ -57,10 +61,15 @@ namespace BombAssistant
                     return EXITCOMMAND;
                 else if (array[0].Equals(BUTTONSTRING))
                     return BUTTONCOMMAND;
+                else if (array[0].Equals(WIRESTRING))
+                    return WIRECOMMAND;
             }
             return 0;
         }
 
+        /*
+            command := <Set Speak Rate> | <button> | exit
+        */
         private void setCommandGrammar()
         {
             rec.UnloadAllGrammars();
@@ -70,12 +79,28 @@ namespace BombAssistant
             commands.Add(createSetSpeakRateGB());
             commands.Add(createExitGB());
             commands.Add(createButtonGB());
+            commands.Add(createWiresGB());
             
             GrammarBuilder commandsGB = new GrammarBuilder(commands);
             commandsGB.Culture = new System.Globalization.CultureInfo("en-GB");
             Grammar gram = new Grammar(commandsGB);
             gram.Name = "Commands";
             rec.LoadGrammar(gram);
+        }
+
+        /*
+            wires := <color> | wires <color>
+            color := red | blue | white | yellow | black
+        */
+
+        private GrammarBuilder createWiresGB()
+        {
+            Choices color = new Choices();
+            color.Add(new string[] { RED, BLUE, WHITE, YELLOW, BLACK });
+
+            GrammarBuilder gb = new GrammarBuilder(WIRESTRING);
+            gb.Append(color,3,6);
+            return gb;
         }
 
         /*
@@ -185,7 +210,9 @@ namespace BombAssistant
             }
             return false;
         }
-
+        /*
+            bool := yes | no | true | false
+        */
         private void setBoolGrammar()
         {
             rec.UnloadAllGrammars();
