@@ -9,19 +9,20 @@ namespace BombAssistant
 {
     class Listener
     {
+        public static String UNRECOGNIZED = "UNRECOGNIZED";
+        public static String GREEN = "green";
         public static String BLACK = "black";
         public static String RED = "red";
         public static String BLUE = "blue";
         public static String YELLOW = "yellow";
         public static String WHITE = "white";
-        public static String ERROR = "error";
-        public static String ABORT = "abort";
-        public static String DETONATE = "detonate";
-        public static String HOLD = "hold";
         public static String YES = "yes";
         public static String NO = "no";
         public static String TRUE = "true";
         public static String FALSE = "false";
+        public static String ERROR = "error";
+
+
 
         public static int SETSPEEDCOMMAND = 1;
         private static String SETSPEAKRATESTRING = "setspeakrate";
@@ -34,6 +35,9 @@ namespace BombAssistant
 
         public static int WIRECOMMAND = 4;
         private static String WIRESTRING = "wires";
+
+        public static int KEYPADCOMMAND = 5;
+        private static String KEYPADSTRING = "keypads";
 
         SpeechRecognitionEngine rec;
         Assistant assistant;
@@ -51,24 +55,26 @@ namespace BombAssistant
             RecognitionResult input = rec.Recognize();
             if(input != null)
             {
-                List<String> array = new List<string>();
+                List<String> list = new List<string>();
                 foreach (var word in input.Words)
-                    array.Add(word.Text);
-                assistant.setInput(array.ToArray());
-                if (array[0].Equals(SETSPEAKRATESTRING))
+                    list.Add(word.Text);
+                assistant.setInput(list.ToArray());
+                if (list[0].Equals(SETSPEAKRATESTRING))
                     return SETSPEEDCOMMAND;
-                else if (array[0].Equals(EXITSTRING))
+                else if (list[0].Equals(EXITSTRING))
                     return EXITCOMMAND;
-                else if (array[0].Equals(BUTTONSTRING))
+                else if (list[0].Equals(BUTTONSTRING))
                     return BUTTONCOMMAND;
-                else if (array[0].Equals(WIRESTRING))
+                else if (list[0].Equals(WIRESTRING))
                     return WIRECOMMAND;
+                else if (list[0].Equals(KEYPADSTRING))
+                    return KEYPADCOMMAND;
             }
             return 0;
         }
 
         /*
-            command := <Set Speak Rate> | <button> | exit
+            command := <Set Speak Rate> | <button> | exit | <wires> | <keypads>
         */
         private void setCommandGrammar()
         {
@@ -80,6 +86,7 @@ namespace BombAssistant
             commands.Add(createExitGB());
             commands.Add(createButtonGB());
             commands.Add(createWiresGB());
+            commands.Add(createKeypadGB());
             
             GrammarBuilder commandsGB = new GrammarBuilder(commands);
             commandsGB.Culture = new System.Globalization.CultureInfo("en-GB");
@@ -89,14 +96,33 @@ namespace BombAssistant
         }
 
         /*
+            keypads := keypads <symbol> <symbol> <symbol> <symbol>
+            symbol := a | ae | b | blackstar | c | cat | cross | euro | h | halfthree | lambda | lightning | moon | n | nose | omega | pharagraph |
+                      psi | q | questionmark | six | smiley | snake | stiches | three | trademark | whitestar
+        */
+
+        private GrammarBuilder createKeypadGB()
+        {
+            Choices symbols = new Choices();
+            symbols.Add(new string[] { KeypadModule.A, KeypadModule.AE, KeypadModule.B, KeypadModule.BLACKSTAR, KeypadModule.C,
+            KeypadModule.CAT, KeypadModule.CROSS, KeypadModule.EURO, KeypadModule.H, KeypadModule.HALFTHREE, KeypadModule.LAMBDA,
+            KeypadModule.LIGHTNING, KeypadModule.MOON, KeypadModule.N, KeypadModule.NOSE, KeypadModule.OMEGA, KeypadModule.PHARAGRAPH,
+            KeypadModule.PSI, KeypadModule.Q, KeypadModule.QUESTIONMARK, KeypadModule.SIX, KeypadModule.SMILEY, KeypadModule.SNAKE,
+            KeypadModule.STICHES, KeypadModule.THREE, KeypadModule.TRADEMARK, KeypadModule.WHITESTAR});
+
+            GrammarBuilder gb = new GrammarBuilder(KEYPADSTRING);
+            gb.Append(symbols, 4,4);
+            return gb;
+        }
+
+        /*
             wires := <color> | wires <color>
             color := red | blue | white | yellow | black
         */
 
         private GrammarBuilder createWiresGB()
         {
-            Choices color = new Choices();
-            color.Add(new string[] { RED, BLUE, WHITE, YELLOW, BLACK });
+            Choices color = getColorChoices();
 
             GrammarBuilder gb = new GrammarBuilder(WIRESTRING);
             gb.Append(color,3,6);
@@ -110,11 +136,10 @@ namespace BombAssistant
         */
         private GrammarBuilder createButtonGB()
         {
-            Choices color = new Choices();
-            color.Add(new string[] { RED, BLUE, WHITE, YELLOW });
+            Choices color = getColorChoices();
 
             Choices text = new Choices();
-            text.Add(new string[] { ABORT, DETONATE, HOLD });
+            text.Add(new string[] { ButtonModule.ABORT, ButtonModule.DETONATE, ButtonModule.HOLD });
 
             GrammarBuilder gb = new GrammarBuilder(BUTTONSTRING);
             gb.Append(color);
@@ -147,8 +172,10 @@ namespace BombAssistant
             RecognitionResult input = rec.Recognize();
             if(input != null)
             {
+                assistant.setInput(new string[] { input.Text });
                 return input.Text;
             }
+            assistant.setInput(new string[] { UNRECOGNIZED });
             return ERROR;
         }
 
@@ -158,8 +185,7 @@ namespace BombAssistant
         private void setColorGrammar()
         {
             rec.UnloadAllGrammars();
-            Choices color = new Choices();
-            color.Add(new string[] { RED, BLUE, WHITE, YELLOW });
+            Choices color = getColorChoices();
 
             GrammarBuilder colorGB = new GrammarBuilder(color);
             colorGB.Culture = new System.Globalization.CultureInfo("en-GB");
@@ -175,8 +201,10 @@ namespace BombAssistant
             RecognitionResult input = rec.Recognize();
             if (input != null)
             {
+                assistant.setInput(new string[] { input.Text });
                 return int.Parse(input.Text);
             }
+            assistant.setInput(new string[] { UNRECOGNIZED });
             return 0;
         }
 
@@ -205,9 +233,11 @@ namespace BombAssistant
             RecognitionResult input = rec.Recognize();
             if (input != null)
             {
+                assistant.setInput(new string[] { input.Text });
                 if (input.Text == YES || input.Text == TRUE)
                     return true;
             }
+            assistant.setInput(new string[] { UNRECOGNIZED });
             return false;
         }
         /*
@@ -224,6 +254,11 @@ namespace BombAssistant
             Grammar gram = new Grammar(boolGB);
             gram.Name = "bool";
             rec.LoadGrammar(gram);
+        }
+
+        private Choices getColorChoices()
+        {
+            return new Choices(new string[] { RED, BLUE, WHITE, YELLOW, BLACK, GREEN });
         }
     }
 }

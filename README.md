@@ -1,7 +1,13 @@
 # bombAssistant
 
 /*
-            command := <Set Speak Rate> | <button> | exit
+            command := <Set Speak Rate> | <button> | exit | <wires> | <keypads>
+*/
+
+/*
+            keypads := keypads <symbol> <symbol> <symbol> <symbol>
+            symbol := a | ae | b | blackstar | c | cat | cross | euro | h | halfthree | lambda | lightning | moon | n |
+		      nose | omega | pharagraph | psi | q | questionmark | six | smiley | snake | stiches | three | trademark | whitestar
 */
 
  /*
