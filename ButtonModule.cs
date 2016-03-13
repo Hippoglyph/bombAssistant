@@ -16,11 +16,13 @@ namespace BombAssistant
         Speaker talk;
         Listener rec;
         String[] input;
-        public ButtonModule(Speaker talk, Listener rec, String[] input)
+        Assistant assistant;
+        public ButtonModule(Speaker talk, Listener rec, String[] input, Assistant lord)
         {
             this.talk = talk;
             this.rec = rec;
             this.input = input;
+            assistant = lord;
             solve();
         }
 
@@ -30,7 +32,6 @@ namespace BombAssistant
             //talk.speakAsync("You have a " + input[1] + " " + input[0] + " that says " + input[2]);
             String text = input[2];
             String color = input[1];
-            int NOFbatteries = -1;
             if (color.Equals(Listener.BLUE) && text.Equals(ABORT))
             {
                 holdStrip();
@@ -38,9 +39,17 @@ namespace BombAssistant
             }
             if (text.Equals(DETONATE))
             {
-                talk.speakAsync("How many batteries?");
-                NOFbatteries = rec.getNumber();
-                if (NOFbatteries > 1)
+                if (assistant.getNOFBatteries() == Assistant.UNKNOWED)
+                {
+                    talk.speakAsync("How many batteries?");
+                    assistant.setNOFBatteries(rec.getNumber());
+                    if (assistant.getNOFBatteries() > 1)
+                    {
+                        quickRelease();
+                        return;
+                    }
+                }
+                else if (assistant.getNOFBatteries() > 1)
                 {
                     quickRelease();
                     return;
@@ -48,22 +57,42 @@ namespace BombAssistant
             }
             if (color.Equals(Listener.WHITE))
             {
-                talk.speakAsync("Is there a lit indicator labeled CAR?");
-                if (rec.getYesNo())
+                if (assistant.getCARIndicator() == Assistant.UNKNOWED)
+                {
+                    talk.speakAsync("Is there a lit indicator labeled CAR?");
+                    if (rec.getYesNo())
+                    {
+                        assistant.setCARIndicator(Assistant.TRUE);
+                        holdStrip();
+                        return;
+                    }
+                    assistant.setCARIndicator(Assistant.FALSE);
+                }
+                else if(assistant.getCARIndicator() == Assistant.TRUE)
                 {
                     holdStrip();
                     return;
                 }
             }
-            if (NOFbatteries == -1)
+            if (assistant.getNOFBatteries() == Assistant.UNKNOWED)
             {
                 talk.speakAsync("How many batteries?");
-                NOFbatteries = rec.getNumber();
+                assistant.setNOFBatteries(rec.getNumber());
             }
-            if (NOFbatteries > 2)
+            if (assistant.getNOFBatteries() > 2)
             {
-                talk.speakAsync("Is there a lit indicator labeled FRK");
-                if (rec.getYesNo())
+                if (assistant.getFRKIndicator() == Assistant.UNKNOWED)
+                {
+                    talk.speakAsync("Is there a lit indicator labeled FRK");
+                    if (rec.getYesNo())
+                    {
+                        assistant.setFRKIndicator(Assistant.TRUE);
+                        quickRelease();
+                        return;
+                    }
+                    assistant.setFRKIndicator(Assistant.FALSE);
+                }
+                else if(assistant.getFRKIndicator() == Assistant.TRUE)
                 {
                     quickRelease();
                     return;

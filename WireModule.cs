@@ -11,11 +11,13 @@ namespace BombAssistant
         Speaker talk;
         Listener rec;
         String[] input;
-        public WireModule(Speaker talk, Listener rec, String[] input)
+        Assistant assistant;
+        public WireModule(Speaker talk, Listener rec, String[] input, Assistant lord)
         {
             this.talk = talk;
             this.rec = rec;
             this.input = input;
+            assistant = lord;
             solve();
         }
 
@@ -76,8 +78,18 @@ namespace BombAssistant
             int reds = getNumberOfWireColor(Listener.RED);
             if (reds > 1)
             {
-                talk.speakAsync("Is the last digit of the serial number odd?");
-                if (rec.getYesNo())
+                if (assistant.getLastDigiOdd() == Assistant.UNKNOWED)
+                {
+                    talk.speakAsync("Is the last digit of the serial number odd?");
+                    if (rec.getYesNo())
+                    {
+                        assistant.setLastDigitOdd(Assistant.TRUE);
+                        talk.speakAsync("Cut the last red wire!");
+                        return;
+                    }
+                    assistant.setLastDigitOdd(Assistant.FALSE);
+                }
+                else if (assistant.getLastDigiOdd() == Assistant.TRUE)
                 {
                     talk.speakAsync("Cut the last red wire!");
                     return;
@@ -85,7 +97,7 @@ namespace BombAssistant
             }
             if (input.Last().Equals(Listener.YELLOW) && reds == 0)
             {
-                talk.speakAsync("Cut the last wire!");
+                talk.speakAsync("Cut the first wire!");
                 return;
             }
             if (getNumberOfWireColor(Listener.BLUE) == 1)
@@ -105,8 +117,17 @@ namespace BombAssistant
         {
             if (input.Last().Equals(Listener.BLACK))
             {
-                talk.speakAsync("Is the last digit of the serial number odd?");
-                if (rec.getYesNo())
+                if (assistant.getLastDigiOdd() == Assistant.UNKNOWED) {
+                    talk.speakAsync("Is the last digit of the serial number odd?");
+                    if (rec.getYesNo())
+                    {
+                        assistant.setLastDigitOdd(Assistant.TRUE);
+                        talk.speakAsync("Cut the fourth wire!");
+                        return;
+                    }
+                    assistant.setLastDigitOdd(Assistant.FALSE);
+                }
+                else if(assistant.getLastDigiOdd() == Assistant.TRUE)
                 {
                     talk.speakAsync("Cut the fourth wire!");
                     return;
@@ -130,10 +151,20 @@ namespace BombAssistant
             int yellows = getNumberOfWireColor(Listener.YELLOW);
             if (yellows == 0)
             {
-                talk.speakAsync("Is the last digit of the serial number odd?");
-                if (rec.getYesNo())
+                if (assistant.getLastDigiOdd() == Assistant.UNKNOWED)
                 {
-                    talk.speakAsync("Cut the fourth wire!");
+                    talk.speakAsync("Is the last digit of the serial number odd?");
+                    if (rec.getYesNo())
+                    {
+                        assistant.setLastDigitOdd(Assistant.TRUE);
+                        talk.speakAsync("Cut the third wire!");
+                        return;
+                    }
+                    assistant.setLastDigitOdd(Assistant.FALSE);
+                }
+                else if (assistant.getLastDigiOdd() == Assistant.TRUE)
+                {
+                    talk.speakAsync("Cut the third wire!");
                     return;
                 }
             }

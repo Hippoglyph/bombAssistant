@@ -31,8 +31,8 @@ namespace BombAssistant
         public static String C = "c";
         public static String THREE = "three";
         public static String BLACKSTAR = "blackstar";
-        public static String STICHES = "stiches";
-        public static String AE = "ae";
+        public static String STITCHES = "stitches";
+        public static String AE = "norwegian";
         public static String N = "n";
         public static String OMEGA = "omega";
 
@@ -56,6 +56,7 @@ namespace BombAssistant
                 talk.speakAsync("Impossible combination of symbols. Please repeat!");
                 return;
             }
+            sayAnswer(matrix, column);
         }
 
         private void sayAnswer(String[,] matrix, int column)
@@ -67,9 +68,10 @@ namespace BombAssistant
                 foreach(String symbol in input)
                 {
                     if (matrix[column, y].Equals(symbol))
-                        sb.Append(symbol + " ");
+                        sb.Append(symbol + ", ");
                 }
             }
+            sb.Remove(sb.Length - 2, 2);
             talk.speakAsync(sb.ToString());
         }
 
@@ -138,7 +140,7 @@ namespace BombAssistant
 
             matrix[5, 0] = SIX;
             matrix[5, 1] = EURO;
-            matrix[5, 2] = STICHES;
+            matrix[5, 2] = STITCHES;
             matrix[5, 3] = AE;
             matrix[5, 4] = PSI;
             matrix[5, 5] = N;

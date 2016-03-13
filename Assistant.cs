@@ -8,14 +8,35 @@ namespace BombAssistant
 {
     class Assistant
     {
+        public static int UNKNOWED = -1;
+        public static int FALSE = 0;
+        public static int TRUE = 1;
+
         Speaker talk;
         Listener rec;
         bool running;
         String[] input;
+        int strikes;
+        int NOFBatteries;
+        int lastDigitOdd;
+        int CAR;
+        int FRK;
+        int hasVowel;
         public Assistant()
         {
             talk = new Speaker();
             rec = new Listener(this);
+            init();
+        }
+
+        private void init()
+        {
+            strikes = 0;
+            NOFBatteries = UNKNOWED;
+            lastDigitOdd = UNKNOWED;
+            CAR = UNKNOWED;
+            FRK = UNKNOWED;
+            hasVowel = UNKNOWED;
         }
         public void start()
         {
@@ -29,11 +50,15 @@ namespace BombAssistant
                 else if (command == Listener.EXITCOMMAND)
                     exit();
                 else if (command == Listener.BUTTONCOMMAND)
-                    new ButtonModule(talk, rec, input);
+                    new ButtonModule(talk, rec, input, this);
                 else if (command == Listener.WIRECOMMAND)
-                    new WireModule(talk, rec, input);
+                    new WireModule(talk, rec, input, this);
                 else if (command == Listener.KEYPADCOMMAND)
                     new KeypadModule(talk, rec, input);
+                else if (command == Listener.SETSTRIKESCOMMAND)
+                    setStrikesCommand();
+                else if (command == Listener.SIMONSAYSCOMMAND)
+                    new SimonSaysModule(talk, rec, input, this);
                 else
                     unkownedCommand();
                 Console.WriteLine();
@@ -64,10 +89,15 @@ namespace BombAssistant
             talk.speak("From now on I will speak in this rate, does this please you?");
         }
 
+        private void setStrikesCommand()
+        {
+            setStrikes();
+            talk.speakAsync("Strikes set to " + strikes);
+        }
+
         public void setInput(String[] input)
         {
             this.input = input;
-            Console.WriteLine();
             Console.Write("You:    ");
             foreach(String word in input)
             {
@@ -79,6 +109,66 @@ namespace BombAssistant
         private void setSpeakRate()
         {
             talk.setSpeakRate(int.Parse(input[1]));
+        }
+
+        private void setStrikes()
+        {
+            strikes = int.Parse(input[1]);
+        }
+
+        public int getStrikes()
+        {
+            return strikes;
+        }
+
+        public void setLastDigitOdd(int n)
+        {
+            lastDigitOdd = n;
+        }
+
+        public int getLastDigiOdd()
+        {
+            return lastDigitOdd;
+        }
+
+        public void setNOFBatteries(int n)
+        {
+            NOFBatteries = n;
+        }
+
+        public int getNOFBatteries()
+        {
+            return NOFBatteries;
+        }
+
+        public void setCARIndicator(int n)
+        {
+            CAR = n;
+        }
+
+        public int getCARIndicator()
+        {
+            return CAR;
+        }
+
+        public void setFRKIndicator(int n)
+        {
+            FRK = n;
+        }
+
+        public int getFRKIndicator()
+        {
+            return FRK;
+        }
+
+        public void setHasVowel(int n)
+        {
+            hasVowel = n;
+        }
+
+        public int getHasVowel()
+        {
+            return hasVowel;
         }
     }
 }

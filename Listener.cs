@@ -39,6 +39,12 @@ namespace BombAssistant
         public static int KEYPADCOMMAND = 5;
         private static String KEYPADSTRING = "keypads";
 
+        public static int SETSTRIKESCOMMAND = 6;
+        private static String SETSTRIKESSTRING = "setstrikes";
+
+        public static int SIMONSAYSCOMMAND = 7;
+        private static String SIMONSAYSSTRING = "simonsays";
+
         SpeechRecognitionEngine rec;
         Assistant assistant;
 
@@ -69,12 +75,16 @@ namespace BombAssistant
                     return WIRECOMMAND;
                 else if (list[0].Equals(KEYPADSTRING))
                     return KEYPADCOMMAND;
+                else if (list[0].Equals(SETSTRIKESSTRING))
+                    return SETSTRIKESCOMMAND;
+                else if (list[0].Equals(SIMONSAYSSTRING))
+                    return SIMONSAYSCOMMAND;
             }
             return 0;
         }
 
         /*
-            command := <Set Speak Rate> | <button> | exit | <wires> | <keypads>
+            command := <Set Speak Rate> | <button> | exit | <wires> | <keypads> | <Set Strikes> | <Simon Says>
         */
         private void setCommandGrammar()
         {
@@ -87,6 +97,8 @@ namespace BombAssistant
             commands.Add(createButtonGB());
             commands.Add(createWiresGB());
             commands.Add(createKeypadGB());
+            commands.Add(createSetStrikeGB());
+            commands.Add(createSimonSaysBG());
             
             GrammarBuilder commandsGB = new GrammarBuilder(commands);
             commandsGB.Culture = new System.Globalization.CultureInfo("en-GB");
@@ -96,9 +108,36 @@ namespace BombAssistant
         }
 
         /*
+            simonsays := simonsays <colors>
+            colors := <colors> <color> | <color>
+            color := red | blue | white | yellow | black | green
+        */
+
+        private GrammarBuilder createSimonSaysBG()
+        {
+            Choices colors = getColorChoices();
+            GrammarBuilder gb = new GrammarBuilder(SIMONSAYSSTRING);
+            gb.Append(colors, 1, 4);
+            return gb;
+        }
+
+        /*
+            setstrikes := setstrikes <number>
+            number := 0 | 1 | 2
+        */
+        private GrammarBuilder createSetStrikeGB()
+        {
+            Choices strikes = new Choices();
+            strikes.Add(new string[] { 0.ToString(), 1.ToString(), 2.ToString() });
+            GrammarBuilder gb = new GrammarBuilder(SETSTRIKESSTRING);
+            gb.Append(strikes);
+            return gb;
+        }
+
+        /*
             keypads := keypads <symbol> <symbol> <symbol> <symbol>
-            symbol := a | ae | b | blackstar | c | cat | cross | euro | h | halfthree | lambda | lightning | moon | n | nose | omega | pharagraph |
-                      psi | q | questionmark | six | smiley | snake | stiches | three | trademark | whitestar
+            symbol := a | norwegian | b | blackstar | c | cat | cross | euro | h | halfthree | lambda | lightning | moon | n | nose | omega | pharagraph |
+                      psi | q | questionmark | six | smiley | snake | stitches | three | trademark | whitestar
         */
 
         private GrammarBuilder createKeypadGB()
@@ -108,7 +147,7 @@ namespace BombAssistant
             KeypadModule.CAT, KeypadModule.CROSS, KeypadModule.EURO, KeypadModule.H, KeypadModule.HALFTHREE, KeypadModule.LAMBDA,
             KeypadModule.LIGHTNING, KeypadModule.MOON, KeypadModule.N, KeypadModule.NOSE, KeypadModule.OMEGA, KeypadModule.PHARAGRAPH,
             KeypadModule.PSI, KeypadModule.Q, KeypadModule.QUESTIONMARK, KeypadModule.SIX, KeypadModule.SMILEY, KeypadModule.SNAKE,
-            KeypadModule.STICHES, KeypadModule.THREE, KeypadModule.TRADEMARK, KeypadModule.WHITESTAR});
+            KeypadModule.STITCHES, KeypadModule.THREE, KeypadModule.TRADEMARK, KeypadModule.WHITESTAR});
 
             GrammarBuilder gb = new GrammarBuilder(KEYPADSTRING);
             gb.Append(symbols, 4,4);
@@ -116,7 +155,8 @@ namespace BombAssistant
         }
 
         /*
-            wires := <color> | wires <color>
+            wires := wires <colors>
+            colors := <colors> <color> | <color>
             color := red | blue | white | yellow | black
         */
 
@@ -131,7 +171,7 @@ namespace BombAssistant
 
         /*
             button := button <color> <text>
-            color := red | blue | white | yellow
+            color := red | blue | white | yellow | black | green
             text := abort | detonate | hold
         */
         private GrammarBuilder createButtonGB()
@@ -180,7 +220,7 @@ namespace BombAssistant
         }
 
         /*
-            color := red | blue | white | yellow
+            color := red | blue | white | yellow | black | green
         */
         private void setColorGrammar()
         {
@@ -236,6 +276,7 @@ namespace BombAssistant
                 assistant.setInput(new string[] { input.Text });
                 if (input.Text == YES || input.Text == TRUE)
                     return true;
+                return false;
             }
             assistant.setInput(new string[] { UNRECOGNIZED });
             return false;
