@@ -59,6 +59,8 @@ namespace BombAssistant
                     setStrikesCommand();
                 else if (command == Listener.SIMONSAYSCOMMAND)
                     new SimonSaysModule(talk, rec, input, this);
+                else if (command == Listener.WHOSONFIRSTCOMMAND)
+                    new WhosOnFirstModule(talk, rec, input);
                 else
                     unkownedCommand();
                 Console.WriteLine();

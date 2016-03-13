@@ -21,7 +21,7 @@ namespace BombAssistant
         public static String TRUE = "true";
         public static String FALSE = "false";
         public static String ERROR = "error";
-
+        public static String EXIT = "exit";
 
 
         public static int SETSPEEDCOMMAND = 1;
@@ -44,6 +44,9 @@ namespace BombAssistant
 
         public static int SIMONSAYSCOMMAND = 7;
         private static String SIMONSAYSSTRING = "simonsays";
+
+        public static int WHOSONFIRSTCOMMAND = 8;
+        private static String WHOSONFIRSTSTRING = "whosonfirst";
 
         SpeechRecognitionEngine rec;
         Assistant assistant;
@@ -79,12 +82,14 @@ namespace BombAssistant
                     return SETSTRIKESCOMMAND;
                 else if (list[0].Equals(SIMONSAYSSTRING))
                     return SIMONSAYSCOMMAND;
+                else if (list[0].Equals(WHOSONFIRSTSTRING))
+                    return WHOSONFIRSTCOMMAND;
             }
             return 0;
         }
 
         /*
-            command := <Set Speak Rate> | <button> | exit | <wires> | <keypads> | <Set Strikes> | <Simon Says>
+            command := <Set Speak Rate> | <button> | exit | <wires> | <keypads> | <Set Strikes> | <Simon Says> | <Whos on First>
         */
         private void setCommandGrammar()
         {
@@ -98,13 +103,25 @@ namespace BombAssistant
             commands.Add(createWiresGB());
             commands.Add(createKeypadGB());
             commands.Add(createSetStrikeGB());
-            commands.Add(createSimonSaysBG());
+            commands.Add(createSimonSaysGB());
+            commands.Add(createWhosOnFirstGB());
             
             GrammarBuilder commandsGB = new GrammarBuilder(commands);
             commandsGB.Culture = new System.Globalization.CultureInfo("en-GB");
             Grammar gram = new Grammar(commandsGB);
             gram.Name = "Commands";
             rec.LoadGrammar(gram);
+        }
+        /*
+            whosonfirst := whosonfirst <letters> | whosonfirst empty
+            letters := <letters> letter | letter
+        */
+        private GrammarBuilder createWhosOnFirstGB()
+        {
+            Choices letters = getLetterChoises();
+            GrammarBuilder gb = new GrammarBuilder(WHOSONFIRSTSTRING);
+            gb.Append(letters, 1, 16);
+            return gb;
         }
 
         /*
@@ -113,7 +130,7 @@ namespace BombAssistant
             color := red | blue | white | yellow | black | green
         */
 
-        private GrammarBuilder createSimonSaysBG()
+        private GrammarBuilder createSimonSaysGB()
         {
             Choices colors = getColorChoices();
             GrammarBuilder gb = new GrammarBuilder(SIMONSAYSSTRING);
@@ -234,6 +251,33 @@ namespace BombAssistant
             rec.LoadGrammar(gram);
         }
 
+        public String getWord()
+        {
+            setWordGrammar();
+
+            RecognitionResult input = rec.Recognize();
+            if(input != null)
+            {
+                assistant.setInput(new string[] { input.Text });
+                return input.Text;
+            }
+            assistant.setInput(new string[] { UNRECOGNIZED });
+            return ERROR;
+        }
+
+        private void setWordGrammar()
+        {
+            rec.UnloadAllGrammars();
+            Choices letters = getLetterChoises();
+            letters.Add(EXIT);
+            letters.Add("questionmark");
+            GrammarBuilder wordGB = new GrammarBuilder(letters,1,16);
+            wordGB.Culture = new System.Globalization.CultureInfo("en-GB");
+            Grammar gram = new Grammar(wordGB);
+            gram.Name = "Word";
+            rec.LoadGrammar(gram);
+        }
+
         public int getNumber()
         {
             setNumberGrammar();
@@ -300,6 +344,13 @@ namespace BombAssistant
         private Choices getColorChoices()
         {
             return new Choices(new string[] { RED, BLUE, WHITE, YELLOW, BLACK, GREEN });
+        }
+
+        private Choices getLetterChoises()
+        {
+            return new Choices(new string[] { "q", "w", "e", "r", "t", "y", "u", "i", "o", "p",
+                                        "a", "s", "d", "f", "g", "h", "j", "k", "l",
+                                        "z", "x", "c", "v", "b", "n", "m", "empty"});
         }
     }
 }
