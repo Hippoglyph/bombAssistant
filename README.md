@@ -5,6 +5,11 @@
 */
 
 /*
+            memory := memory <number>
+            number := 1 | 2 | 3 | 4
+*/
+
+/*
             whosonfirst := whosonfirst <letters> | whosonfirst empty
             letters := <letters> letter | letter
 */
@@ -22,7 +27,7 @@
 
 /*
             keypads := keypads <symbol> <symbol> <symbol> <symbol>
-            symbol := a | ae | b | blackstar | c | cat | cross | euro | h | halfthree | lambda | lightning | moon | n |
+            symbol := a | norwegain | b | blackstar | c | cat | cross | euro | h | halfthree | lambda | lightning | moon | n |
 		      nose | omega | pharagraph | psi | q | questionmark | six | smiley | snake | stitches | three | trademark | whitestar
 */
 

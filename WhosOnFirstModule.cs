@@ -55,7 +55,7 @@ namespace BombAssistant
             Dictionary<String, String> labels = getLabelsStep2();
             if (labels.ContainsKey(response))
             {
-                talk.speakAsync("Press first: " + labels[response]);
+                talk.speakAsync("Sequence: "+ labels[response]);
                 return true;
             }
             return false;

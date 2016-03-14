@@ -22,6 +22,8 @@ namespace BombAssistant
         public static String FALSE = "false";
         public static String ERROR = "error";
         public static String EXIT = "exit";
+        public static String WIN = "we did it";
+        public static String LOOSE = "we exploded";
 
 
         public static int SETSPEEDCOMMAND = 1;
@@ -47,6 +49,12 @@ namespace BombAssistant
 
         public static int WHOSONFIRSTCOMMAND = 8;
         private static String WHOSONFIRSTSTRING = "whosonfirst";
+
+        public static int MEMORYCOMMAND = 9;
+        private static String MEMORYSTRING = "memory";
+
+        public static int RESETCOMMAND = 10;
+        private static String RESETSTRING = "we";
 
         SpeechRecognitionEngine rec;
         Assistant assistant;
@@ -84,12 +92,16 @@ namespace BombAssistant
                     return SIMONSAYSCOMMAND;
                 else if (list[0].Equals(WHOSONFIRSTSTRING))
                     return WHOSONFIRSTCOMMAND;
+                else if (list[0].Equals(MEMORYSTRING))
+                    return MEMORYCOMMAND;
+                else if (list[0].Equals(RESETSTRING))
+                    return RESETCOMMAND;
             }
             return 0;
         }
 
         /*
-            command := <Set Speak Rate> | <button> | exit | <wires> | <keypads> | <Set Strikes> | <Simon Says> | <Whos on First>
+            command := <Set Speak Rate> | <button> | exit | <wires> | <keypads> | <Set Strikes> | <Simon Says> | <Whos on First> | <memory> | <reset>
         */
         private void setCommandGrammar()
         {
@@ -105,12 +117,40 @@ namespace BombAssistant
             commands.Add(createSetStrikeGB());
             commands.Add(createSimonSaysGB());
             commands.Add(createWhosOnFirstGB());
+            commands.Add(createMemoryGB());
+            commands.Add(createResetGB());
             
             GrammarBuilder commandsGB = new GrammarBuilder(commands);
             commandsGB.Culture = new System.Globalization.CultureInfo("en-GB");
             Grammar gram = new Grammar(commandsGB);
             gram.Name = "Commands";
             rec.LoadGrammar(gram);
+        }
+        /*
+            reset := we did it | we exploded
+        */
+        private GrammarBuilder createResetGB()
+        {
+            Choices choise = new Choices();
+            choise.Add(WIN);
+            choise.Add(LOOSE);
+            GrammarBuilder gb = new GrammarBuilder();
+            gb.Append(choise);
+            return gb;
+        }
+
+        /*
+            memory := memory <number>
+            number := 1 | 2 | 3 | 4
+        */
+        private GrammarBuilder createMemoryGB()
+        {
+            Choices numbers = new Choices();
+            for (int i = 1; i < 5; i++)
+                numbers.Add(i.ToString());
+            GrammarBuilder gb = new GrammarBuilder(MEMORYSTRING);
+            gb.Append(numbers);
+            return gb;
         }
         /*
             whosonfirst := whosonfirst <letters> | whosonfirst empty
@@ -293,7 +333,7 @@ namespace BombAssistant
         }
 
         /*
-            number := 0..10 | none
+            number := 0..10
         */
         private void setNumberGrammar()
         {
@@ -301,7 +341,6 @@ namespace BombAssistant
             Choices number = new Choices();
             for (int i = 0; i <= 10; i++)
                 number.Add(i.ToString());
-            number.Add("none");
 
             GrammarBuilder numberGB = new GrammarBuilder(number);
             numberGB.Culture = new System.Globalization.CultureInfo("en-GB");

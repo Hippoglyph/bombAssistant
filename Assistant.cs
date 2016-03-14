@@ -61,13 +61,28 @@ namespace BombAssistant
                     new SimonSaysModule(talk, rec, input, this);
                 else if (command == Listener.WHOSONFIRSTCOMMAND)
                     new WhosOnFirstModule(talk, rec, input);
+                else if (command == Listener.MEMORYCOMMAND)
+                    new MemoryModule(talk, rec, input);
+                else if (command == Listener.RESETCOMMAND)
+                    reset();
                 else
                     unkownedCommand();
                 Console.WriteLine();
             }
         }
 
-        
+        private void reset()
+        {
+            init();
+            StringBuilder sb = new StringBuilder();
+            foreach (String word in input)
+                sb.Append(word + " ");
+            String answer = sb.ToString().Trim();
+            if (answer.Equals(Listener.WIN))
+                talk.speakAsync("We fucking did it man. Mom get the camera!");
+            else
+                talk.speakAsync("You should have listen, better luck next time");
+        }
 
         private void intruduce()
         {
