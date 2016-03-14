@@ -1,7 +1,11 @@
 # bombAssistant
 
 /*
-            command := <Set Speak Rate> | <button> | exit | <wires> | <keypads> | <Set Strikes> | <simonsays>
+            command := <Set Speak Rate> | <button> | exit | <wires> | <keypads> | <Set Strikes> | <simonsays> | <memory> | <mazes>
+*/
+
+/*
+            mazes := mazes
 */
 
 /*
@@ -39,6 +43,11 @@
 
 /*
             number := 0..10 | none
+*/
+
+/*
+            coord := <number> <number>
+            number := 0...7
 */
 
 /*

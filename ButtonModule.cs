@@ -120,6 +120,13 @@ namespace BombAssistant
         {
             talk.speakAsync("Hold. What is the color of the strip?");
             String color = rec.getColor();
+
+            while (color.Equals(Listener.UNRECOGNIZED))
+            {
+                talk.speakAsync("Repeat!");
+                color = rec.getColor();
+            }
+
             if (color.Equals(Listener.BLUE))
                 talk.speakAsync("Release when 4 in any position!");
             else if (color.Equals(Listener.WHITE))

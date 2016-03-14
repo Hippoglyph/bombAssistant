@@ -65,6 +65,8 @@ namespace BombAssistant
                     new MemoryModule(talk, rec, input);
                 else if (command == Listener.RESETCOMMAND)
                     reset();
+                else if (command == Listener.MAZESCOMMAND)
+                    new MazesModule(talk, rec);
                 else
                     unkownedCommand();
                 Console.WriteLine();

@@ -56,6 +56,9 @@ namespace BombAssistant
         public static int RESETCOMMAND = 10;
         private static String RESETSTRING = "we";
 
+        public static int MAZESCOMMAND = 11;
+        private static String MAZESSTRING = "mazes";
+
         SpeechRecognitionEngine rec;
         Assistant assistant;
 
@@ -96,6 +99,8 @@ namespace BombAssistant
                     return MEMORYCOMMAND;
                 else if (list[0].Equals(RESETSTRING))
                     return RESETCOMMAND;
+                else if (list[0].Equals(MAZESSTRING))
+                    return MAZESCOMMAND;
             }
             return 0;
         }
@@ -119,6 +124,7 @@ namespace BombAssistant
             commands.Add(createWhosOnFirstGB());
             commands.Add(createMemoryGB());
             commands.Add(createResetGB());
+            commands.Add(createMazesGB());
             
             GrammarBuilder commandsGB = new GrammarBuilder(commands);
             commandsGB.Culture = new System.Globalization.CultureInfo("en-GB");
@@ -126,6 +132,13 @@ namespace BombAssistant
             gram.Name = "Commands";
             rec.LoadGrammar(gram);
         }
+
+        private GrammarBuilder createMazesGB()
+        {
+            GrammarBuilder gb = new GrammarBuilder(MAZESSTRING);
+            return gb;
+        }
+
         /*
             reset := we did it | we exploded
         */
@@ -346,6 +359,41 @@ namespace BombAssistant
             numberGB.Culture = new System.Globalization.CultureInfo("en-GB");
             Grammar gram = new Grammar(numberGB);
             gram.Name = "number";
+            rec.LoadGrammar(gram);
+        }
+
+        public int[] getCoords()
+        {
+            setCoordGrammar();
+
+            int[] coord = new int[2];
+            coord[0] = 0;
+            coord[1] = 1;
+            RecognitionResult input = rec.Recognize();
+            if(input != null)
+            {
+                assistant.setInput(new string[] { input.Text });
+                List<String> list = new List<string>();
+                foreach (var word in input.Words)
+                    list.Add(word.Text);
+                coord[0] = int.Parse(list[0]);
+                coord[1] = int.Parse(list[1]);
+                return coord;
+            }
+            assistant.setInput(new string[] { UNRECOGNIZED });
+            return coord;
+        }
+
+        private void setCoordGrammar()
+        {
+            rec.UnloadAllGrammars();
+            Choices number = new Choices();
+            for (int i = 0; i < 7; i++)
+                number.Add(i.ToString());
+            GrammarBuilder coordGB = new GrammarBuilder(number, 2, 2);
+            coordGB.Culture = new System.Globalization.CultureInfo("en-GB");
+            Grammar gram = new Grammar(coordGB);
+            gram.Name = "coord";
             rec.LoadGrammar(gram);
         }
 
