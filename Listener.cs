@@ -133,6 +133,9 @@ namespace BombAssistant
             rec.LoadGrammar(gram);
         }
 
+        /*
+            mazes := mazes
+        */
         private GrammarBuilder createMazesGB()
         {
             GrammarBuilder gb = new GrammarBuilder(MAZESSTRING);
@@ -342,7 +345,7 @@ namespace BombAssistant
                 return int.Parse(input.Text);
             }
             assistant.setInput(new string[] { UNRECOGNIZED });
-            return 0;
+            return -1;
         }
 
         /*
@@ -367,8 +370,8 @@ namespace BombAssistant
             setCoordGrammar();
 
             int[] coord = new int[2];
-            coord[0] = 0;
-            coord[1] = 1;
+            coord[0] = -1;
+            coord[1] = -1;
             RecognitionResult input = rec.Recognize();
             if(input != null)
             {
@@ -384,6 +387,10 @@ namespace BombAssistant
             return coord;
         }
 
+        /*
+            coord := <number> <number>
+            number := 0...7
+        */
         private void setCoordGrammar()
         {
             rec.UnloadAllGrammars();
