@@ -30,6 +30,9 @@ namespace BombAssistant
             this.talk = talk;
             this.rec = rec;
             exit = "Coordinates contained 0. Ready for new module";
+            circle = new int[2] { -1, -1 };
+            player = new int[2] { -1, -1 };
+            goal = new int[2] { -1, -1 };
             solve();
         }
 
@@ -50,30 +53,39 @@ namespace BombAssistant
 
         private bool init()
         {
-            talk.speakAsync("What is the coordinates of one circle?");
-            circle = rec.getCoords();
-            if (hasZero(circle))
+            while (circle[0] == -1)
             {
-                talk.speakAsync(exit);
-                return false;
+                talk.speakAsync("What is the coordinates of one circle?");
+                circle = rec.getCoords();
+                if (hasZero(circle))
+                {
+                    talk.speakAsync(exit);
+                    return false;
+                }
             }
             circle[0]--;
             circle[1]--;
-            talk.speakAsync("What is your position?");
-            player = rec.getCoords();
-            if (hasZero(player))
+            while (player[0] == -1)
             {
-                talk.speakAsync(exit);
-                return false;
+                talk.speakAsync("What is your position?");
+                player = rec.getCoords();
+                if (hasZero(player))
+                {
+                    talk.speakAsync(exit);
+                    return false;
+                }
             }
             player[0]--;
             player[1]--;
-            talk.speakAsync("What is the position of the goal?");
-            goal = rec.getCoords();
-            if (hasZero(goal))
+            while (goal[0] == -1)
             {
-                talk.speakAsync(exit);
-                return false;
+                talk.speakAsync("What is the position of the goal?");
+                goal = rec.getCoords();
+                if (hasZero(goal))
+                {
+                    talk.speakAsync(exit);
+                    return false;
+                }
             }
             goal[0]--;
             goal[1]--;
@@ -175,6 +187,24 @@ namespace BombAssistant
             if (validate(maze))
                 return maze;
             maze = getMaze2();
+            if (validate(maze))
+                return maze;
+            maze = getMaze3();
+            if (validate(maze))
+                return maze;
+            maze = getMaze4();
+            if (validate(maze))
+                return maze;
+            maze = getMaze5();
+            if (validate(maze))
+                return maze;
+            maze = getMaze6();
+            if (validate(maze))
+                return maze;
+            maze = getMaze7();
+            if (validate(maze))
+                return maze;
+            maze = getMaze8();
             if (validate(maze))
                 return maze;
 
@@ -367,6 +397,318 @@ namespace BombAssistant
 
             nodes[5, 3].circle = true;
             nodes[3, 3].circle = true;
+
+            return nodes;
+        }
+
+        private node[,] getMaze3()
+        {
+            node[,] nodes = createInitNodes();
+
+            nodes[0, 0].neighbors = new node[] { nodes[1, 0], nodes[0, 1] };
+            nodes[0, 1].neighbors = new node[] { nodes[0, 0], nodes[0, 2] };
+            nodes[0, 2].neighbors = new node[] { nodes[0, 3], nodes[0, 1] };
+            nodes[0, 3].neighbors = new node[] { nodes[0, 2], nodes[0, 4] };
+            nodes[0, 4].neighbors = new node[] { nodes[0, 3], nodes[0, 5], nodes[1, 4] };
+            nodes[0, 5].neighbors = new node[] { nodes[0, 4], nodes[1, 5] };
+
+            nodes[1, 0].neighbors = new node[] { nodes[0, 0], nodes[1, 1] };
+            nodes[1, 1].neighbors = new node[] { nodes[1, 0], nodes[1, 2] };
+            nodes[1, 2].neighbors = new node[] { nodes[1, 1], nodes[2, 2] };
+            nodes[1, 3].neighbors = new node[] { nodes[2, 3] };
+            nodes[1, 4].neighbors = new node[] { nodes[0, 4], nodes[2, 4] };
+            nodes[1, 5].neighbors = new node[] { nodes[0, 5], nodes[2, 5] };
+
+            nodes[2, 0].neighbors = new node[] { nodes[3, 0] };
+            nodes[2, 1].neighbors = new node[] { nodes[2, 2], nodes[3, 1] };
+            nodes[2, 2].neighbors = new node[] { nodes[2, 1], nodes[1, 2] };
+            nodes[2, 3].neighbors = new node[] { nodes[1, 3], nodes[3, 3] };
+            nodes[2, 4].neighbors = new node[] { nodes[1, 4], nodes[3, 4] };
+            nodes[2, 5].neighbors = new node[] { nodes[1, 5] };
+
+            nodes[3, 0].neighbors = new node[] { nodes[2, 0], nodes[4, 0] };
+            nodes[3, 1].neighbors = new node[] { nodes[2, 1], nodes[4, 1] };
+            nodes[3, 2].neighbors = new node[] { nodes[4, 2], nodes[3, 3] };
+            nodes[3, 3].neighbors = new node[] { nodes[2, 3], nodes[4, 3], nodes[3, 2] };
+            nodes[3, 4].neighbors = new node[] { nodes[2, 4], nodes[4, 4] };
+            nodes[3, 5].neighbors = new node[] { nodes[4, 5] };
+
+            nodes[4, 0].neighbors = new node[] { nodes[5, 0], nodes[3, 0] };
+            nodes[4, 1].neighbors = new node[] { nodes[3, 1], nodes[5, 1] };
+            nodes[4, 2].neighbors = new node[] { nodes[3, 2] };
+            nodes[4, 3].neighbors = new node[] { nodes[3, 3], nodes[5, 3] };
+            nodes[4, 4].neighbors = new node[] { nodes[3, 4], nodes[4, 5] };
+            nodes[4, 5].neighbors = new node[] { nodes[3, 5], nodes[4, 4] };
+
+            nodes[5, 0].neighbors = new node[] { nodes[4, 0], nodes[5, 1] };
+            nodes[5, 1].neighbors = new node[] { nodes[5, 0], nodes[5, 2], nodes[4, 1] };
+            nodes[5, 2].neighbors = new node[] { nodes[5, 1], nodes[5, 3] };
+            nodes[5, 3].neighbors = new node[] { nodes[5, 2], nodes[5, 4], nodes[4, 3] };
+            nodes[5, 4].neighbors = new node[] { nodes[5, 3], nodes[5, 5] };
+            nodes[5, 5].neighbors = new node[] { nodes[5, 4] };
+
+            nodes[0, 0].circle = true;
+            nodes[0, 3].circle = true;
+
+            return nodes;
+        }
+
+        private node[,] getMaze4()
+        {
+            node[,] nodes = createInitNodes();
+
+            nodes[0, 0].neighbors = new node[] { nodes[1, 0] };
+            nodes[0, 1].neighbors = new node[] { nodes[1, 0], nodes[0, 2] };
+            nodes[0, 2].neighbors = new node[] { nodes[0, 3], nodes[0, 1], nodes[1, 2] };
+            nodes[0, 3].neighbors = new node[] { nodes[0, 2], nodes[0, 4] };
+            nodes[0, 4].neighbors = new node[] { nodes[0, 3], nodes[0, 5] };
+            nodes[0, 5].neighbors = new node[] { nodes[0, 4] };
+
+            nodes[1, 0].neighbors = new node[] { nodes[0, 0], nodes[2, 0] };
+            nodes[1, 1].neighbors = new node[] { nodes[0, 1], nodes[2, 1] };
+            nodes[1, 2].neighbors = new node[] { nodes[0, 2], nodes[1, 3] };
+            nodes[1, 3].neighbors = new node[] { nodes[1, 2], nodes[2, 3] };
+            nodes[1, 4].neighbors = new node[] { nodes[2, 4], nodes[1, 5] };
+            nodes[1, 5].neighbors = new node[] { nodes[1, 4], nodes[2, 5] };
+            
+            nodes[2, 0].neighbors = new node[] { nodes[3, 0], nodes[1, 0] };
+            nodes[2, 1].neighbors = new node[] { nodes[1, 1], nodes[3, 1] };
+            nodes[2, 2].neighbors = new node[] { nodes[3, 1] };
+            nodes[2, 3].neighbors = new node[] { nodes[1, 3], nodes[3, 3] };
+            nodes[2, 4].neighbors = new node[] { nodes[1, 4], nodes[3, 4] };
+            nodes[2, 5].neighbors = new node[] { nodes[1, 5], nodes[3, 5] };
+
+            nodes[3, 0].neighbors = new node[] { nodes[2, 0], nodes[4, 0] };
+            nodes[3, 1].neighbors = new node[] { nodes[2, 1], nodes[4, 1], nodes[3, 2] };
+            nodes[3, 2].neighbors = new node[] { nodes[2, 2], nodes[3, 1] };
+            nodes[3, 3].neighbors = new node[] { nodes[2, 3], nodes[3, 4] };
+            nodes[3, 4].neighbors = new node[] { nodes[2, 4], nodes[3, 3], nodes[4, 4] };
+            nodes[3, 5].neighbors = new node[] { nodes[4, 5], nodes[2, 5] };
+
+            nodes[4, 0].neighbors = new node[] { nodes[5, 0], nodes[3, 0], nodes[4, 1] };
+            nodes[4, 1].neighbors = new node[] { nodes[3, 1], nodes[4, 0] };
+            nodes[4, 2].neighbors = new node[] { nodes[4, 3], nodes[5, 2] };
+            nodes[4, 3].neighbors = new node[] { nodes[4, 2] };
+            nodes[4, 4].neighbors = new node[] { nodes[3, 4] };
+            nodes[4, 5].neighbors = new node[] { nodes[3, 5], nodes[5, 5] };
+
+            nodes[5, 0].neighbors = new node[] { nodes[4, 0], nodes[5, 1] };
+            nodes[5, 1].neighbors = new node[] { nodes[5, 0] };
+            nodes[5, 2].neighbors = new node[] { nodes[4, 2], nodes[5, 3] };
+            nodes[5, 3].neighbors = new node[] { nodes[5, 2], nodes[5, 4] };
+            nodes[5, 4].neighbors = new node[] { nodes[5, 3], nodes[5, 5] };
+            nodes[5, 5].neighbors = new node[] { nodes[5, 4], nodes[4, 5] };
+
+            nodes[4, 2].circle = true;
+            nodes[3, 5].circle = true;
+
+            return nodes;
+        }
+
+        private node[,] getMaze5()
+        {
+            node[,] nodes = createInitNodes();
+
+            nodes[0, 0].neighbors = new node[] { nodes[0, 1] };
+            nodes[0, 1].neighbors = new node[] { nodes[0, 0], nodes[0, 2] };
+            nodes[0, 2].neighbors = new node[] { nodes[0, 3], nodes[0, 1], nodes[1, 2] };
+            nodes[0, 3].neighbors = new node[] { nodes[0, 2], nodes[1, 3] };
+            nodes[0, 4].neighbors = new node[] { nodes[1, 4], nodes[0, 5] };
+            nodes[0, 5].neighbors = new node[] { nodes[0, 4], nodes[1, 5] };
+
+            nodes[1, 0].neighbors = new node[] { nodes[1, 1], nodes[2, 0] };
+            nodes[1, 1].neighbors = new node[] { nodes[1, 0], nodes[1, 2] };
+            nodes[1, 2].neighbors = new node[] { nodes[0, 2], nodes[1, 1] };
+            nodes[1, 3].neighbors = new node[] { nodes[0, 3], nodes[1, 4] };
+            nodes[1, 4].neighbors = new node[] { nodes[1, 3], nodes[0, 4] };
+            nodes[1, 5].neighbors = new node[] { nodes[0, 5], nodes[2, 5] };
+
+            nodes[2, 0].neighbors = new node[] { nodes[2, 1], nodes[1, 0] };
+            nodes[2, 1].neighbors = new node[] { nodes[2, 0], nodes[2, 2] };
+            nodes[2, 2].neighbors = new node[] { nodes[2, 1] };
+            nodes[2, 3].neighbors = new node[] { nodes[3, 3], nodes[2, 4] };
+            nodes[2, 4].neighbors = new node[] { nodes[2, 3] };
+            nodes[2, 5].neighbors = new node[] { nodes[1, 5], nodes[3, 5] };
+
+            nodes[3, 0].neighbors = new node[] { nodes[4, 0] };
+            nodes[3, 1].neighbors = new node[] { nodes[4, 1], nodes[3, 2] };
+            nodes[3, 2].neighbors = new node[] { nodes[3, 3], nodes[3, 1] };
+            nodes[3, 3].neighbors = new node[] { nodes[2, 3], nodes[3, 4], nodes[3, 2] };
+            nodes[3, 4].neighbors = new node[] { nodes[3, 5], nodes[3, 3] };
+            nodes[3, 5].neighbors = new node[] { nodes[3, 4], nodes[2, 5] };
+
+            nodes[4, 0].neighbors = new node[] { nodes[5, 0], nodes[3, 0], nodes[4, 1] };
+            nodes[4, 1].neighbors = new node[] { nodes[3, 1], nodes[4, 0] };
+            nodes[4, 2].neighbors = new node[] { nodes[4, 3], nodes[5, 2] };
+            nodes[4, 3].neighbors = new node[] { nodes[4, 2], nodes[4, 4] };
+            nodes[4, 4].neighbors = new node[] { nodes[5, 4], nodes[4, 3] };
+            nodes[4, 5].neighbors = new node[] { nodes[5, 5] };
+
+            nodes[5, 0].neighbors = new node[] { nodes[4, 0], nodes[5, 1] };
+            nodes[5, 1].neighbors = new node[] { nodes[5, 0], nodes[5, 2] };
+            nodes[5, 2].neighbors = new node[] { nodes[5, 1], nodes[4, 2] };
+            nodes[5, 3].neighbors = new node[] { nodes[5, 4] };
+            nodes[5, 4].neighbors = new node[] { nodes[5, 3], nodes[5, 5], nodes[4, 4] };
+            nodes[5, 5].neighbors = new node[] { nodes[5, 4], nodes[4, 5] };
+
+            nodes[4, 0].circle = true;
+            nodes[2, 4].circle = true;
+
+            return nodes;
+        }
+
+        private node[,] getMaze6()
+        {
+            node[,] nodes = createInitNodes();
+
+            nodes[0, 0].neighbors = new node[] { nodes[0, 1], nodes[1, 0] };
+            nodes[0, 1].neighbors = new node[] { nodes[0, 0], nodes[0, 2] };
+            nodes[0, 2].neighbors = new node[] { nodes[0, 1], nodes[1, 2] };
+            nodes[0, 3].neighbors = new node[] { nodes[0, 4], nodes[1, 3] };
+            nodes[0, 4].neighbors = new node[] { nodes[0, 3], nodes[0, 5] };
+            nodes[0, 5].neighbors = new node[] { nodes[0, 4], nodes[1, 5] };
+
+            nodes[1, 0].neighbors = new node[] { nodes[0, 0], nodes[2, 0] };
+            nodes[1, 1].neighbors = new node[] { nodes[1, 2], nodes[2, 1] };
+            nodes[1, 2].neighbors = new node[] { nodes[0, 2], nodes[1, 1] };
+            nodes[1, 3].neighbors = new node[] { nodes[0, 3], nodes[1, 4] };
+            nodes[1, 4].neighbors = new node[] { nodes[1, 3] };
+            nodes[1, 5].neighbors = new node[] { nodes[0, 5], nodes[2, 5] };
+            
+            nodes[2, 0].neighbors = new node[] { nodes[3, 0], nodes[1, 0] };
+            nodes[2, 1].neighbors = new node[] { nodes[1, 1] };
+            nodes[2, 2].neighbors = new node[] { nodes[2, 3], nodes[3, 2] };
+            nodes[2, 3].neighbors = new node[] { nodes[3, 3], nodes[2, 4], nodes[2, 2] };
+            nodes[2, 4].neighbors = new node[] { nodes[2, 3], nodes[3, 4] };
+            nodes[2, 5].neighbors = new node[] { nodes[1, 5], nodes[3, 5] };
+
+            nodes[3, 0].neighbors = new node[] { nodes[2, 0], nodes[3, 1] };
+            nodes[3, 1].neighbors = new node[] { nodes[4, 1], nodes[3, 0] };
+            nodes[3, 2].neighbors = new node[] { nodes[2, 2] };
+            nodes[3, 3].neighbors = new node[] { nodes[2, 3], nodes[4, 3] };
+            nodes[3, 4].neighbors = new node[] { nodes[2, 4], nodes[4, 4] };
+            nodes[3, 5].neighbors = new node[] { nodes[2, 5], nodes[4, 5] };
+
+            nodes[4, 0].neighbors = new node[] { nodes[5, 0], nodes[4, 1] };
+            nodes[4, 1].neighbors = new node[] { nodes[3, 1], nodes[4, 0] };
+            nodes[4, 2].neighbors = new node[] { nodes[4, 3], nodes[5, 2] };
+            nodes[4, 3].neighbors = new node[] { nodes[4, 2], nodes[3, 3] };
+            nodes[4, 4].neighbors = new node[] { nodes[3, 4], nodes[4, 5] };
+            nodes[4, 5].neighbors = new node[] { nodes[5, 5], nodes[3, 5], nodes[4, 4] };
+
+            nodes[5, 0].neighbors = new node[] { nodes[4, 0], nodes[5, 1] };
+            nodes[5, 1].neighbors = new node[] { nodes[5, 0], nodes[5, 2] };
+            nodes[5, 2].neighbors = new node[] { nodes[5, 1], nodes[4, 2] };
+            nodes[5, 3].neighbors = new node[] { nodes[5, 4] };
+            nodes[5, 4].neighbors = new node[] { nodes[5, 3], nodes[5, 5] };
+            nodes[5, 5].neighbors = new node[] { nodes[5, 4], nodes[4, 5] };
+
+            nodes[1, 0].circle = true;
+            nodes[1, 5].circle = true;
+
+            return nodes;
+        }
+
+        private node[,] getMaze7()
+        {
+            node[,] nodes = createInitNodes();
+
+            nodes[0, 0].neighbors = new node[] { nodes[0, 1] };
+            nodes[0, 1].neighbors = new node[] { nodes[0, 0], nodes[0, 2], nodes[1, 1] };
+            nodes[0, 2].neighbors = new node[] { nodes[0, 1], nodes[0, 3] };
+            nodes[0, 3].neighbors = new node[] { nodes[0, 4], nodes[0, 2] };
+            nodes[0, 4].neighbors = new node[] { nodes[0, 3], nodes[0, 5] };
+            nodes[0, 5].neighbors = new node[] { nodes[0, 4], nodes[1, 5] };
+
+            nodes[1, 0].neighbors = new node[] { nodes[1, 1], nodes[2, 0] };
+            nodes[1, 1].neighbors = new node[] { nodes[0, 1], nodes[2, 1], nodes[1, 0] };
+            nodes[1, 2].neighbors = new node[] { nodes[2, 2], nodes[1, 3] };
+            nodes[1, 3].neighbors = new node[] { nodes[1, 2], nodes[2, 3] };
+            nodes[1, 4].neighbors = new node[] { nodes[1, 5] };
+            nodes[1, 5].neighbors = new node[] { nodes[0, 5], nodes[2, 5], nodes[1, 4] };
+
+            nodes[2, 0].neighbors = new node[] { nodes[3, 0], nodes[1, 0] };
+            nodes[2, 1].neighbors = new node[] { nodes[1, 1] };
+            nodes[2, 2].neighbors = new node[] { nodes[3, 2], nodes[1, 2] };
+            nodes[2, 3].neighbors = new node[] { nodes[1, 3], nodes[2, 4] };
+            nodes[2, 4].neighbors = new node[] { nodes[2, 3], nodes[3, 4] };
+            nodes[2, 5].neighbors = new node[] { nodes[1, 5], nodes[3, 5] };
+
+            nodes[3, 0].neighbors = new node[] { nodes[2, 0], nodes[3, 1] };
+            nodes[3, 1].neighbors = new node[] { nodes[4, 1], nodes[3, 0] };
+            nodes[3, 2].neighbors = new node[] { nodes[2, 2], nodes[4, 2] };
+            nodes[3, 3].neighbors = new node[] { nodes[4, 3] };
+            nodes[3, 4].neighbors = new node[] { nodes[2, 4], nodes[4, 4] };
+            nodes[3, 5].neighbors = new node[] { nodes[2, 5], nodes[4, 5] };
+
+            nodes[4, 0].neighbors = new node[] { nodes[5, 0], nodes[4, 1] };
+            nodes[4, 1].neighbors = new node[] { nodes[3, 1], nodes[4, 0] };
+            nodes[4, 2].neighbors = new node[] { nodes[3, 2], nodes[4, 3] };
+            nodes[4, 3].neighbors = new node[] { nodes[4, 2], nodes[3, 3], nodes[5, 3] };
+            nodes[4, 4].neighbors = new node[] { nodes[3, 4], nodes[5, 4] };
+            nodes[4, 5].neighbors = new node[] { nodes[5, 5], nodes[3, 5] };
+
+            nodes[5, 0].neighbors = new node[] { nodes[4, 0], nodes[5, 1] };
+            nodes[5, 1].neighbors = new node[] { nodes[5, 0], nodes[5, 2] };
+            nodes[5, 2].neighbors = new node[] { nodes[5, 1], nodes[5, 3] };
+            nodes[5, 3].neighbors = new node[] { nodes[5, 2], nodes[4, 3] };
+            nodes[5, 4].neighbors = new node[] { nodes[4, 4] };
+            nodes[5, 5].neighbors = new node[] { nodes[4, 5] };
+
+            nodes[3, 0].circle = true;
+            nodes[2, 3].circle = true;
+
+            return nodes;
+        }
+
+        private node[,] getMaze8()
+        {
+            node[,] nodes = createInitNodes();
+
+            nodes[0, 0].neighbors = new node[] { nodes[0, 1] };
+            nodes[0, 1].neighbors = new node[] { nodes[0, 0], nodes[0, 2] };
+            nodes[0, 2].neighbors = new node[] { nodes[0, 1], nodes[0, 3], nodes[1, 2] };
+            nodes[0, 3].neighbors = new node[] { nodes[0, 4], nodes[0, 2] };
+            nodes[0, 4].neighbors = new node[] { nodes[0, 3], nodes[0, 5] };
+            nodes[0, 5].neighbors = new node[] { nodes[0, 4], nodes[1, 5] };
+
+            nodes[1, 0].neighbors = new node[] { nodes[1, 1], nodes[2, 0] };
+            nodes[1, 1].neighbors = new node[] { nodes[1, 2], nodes[1, 0] };
+            nodes[1, 2].neighbors = new node[] { nodes[0, 2], nodes[1, 1], nodes[2, 2] };
+            nodes[1, 3].neighbors = new node[] { nodes[1, 4] };
+            nodes[1, 4].neighbors = new node[] { nodes[1, 5], nodes[1, 3] };
+            nodes[1, 5].neighbors = new node[] { nodes[0, 5], nodes[1, 4] };
+
+            nodes[2, 0].neighbors = new node[] { nodes[3, 0], nodes[1, 0] };
+            nodes[2, 1].neighbors = new node[] { nodes[3, 1], nodes[2, 2] };
+            nodes[2, 2].neighbors = new node[] { nodes[2, 1], nodes[1, 2] };
+            nodes[2, 3].neighbors = new node[] { nodes[3, 3], nodes[2, 4] };
+            nodes[2, 4].neighbors = new node[] { nodes[2, 3], nodes[2, 5] };
+            nodes[2, 5].neighbors = new node[] { nodes[2, 4], nodes[3, 5] };
+
+            nodes[3, 0].neighbors = new node[] { nodes[2, 0], nodes[4, 0] };
+            nodes[3, 1].neighbors = new node[] { nodes[2, 1] };
+            nodes[3, 2].neighbors = new node[] { nodes[3, 3], nodes[4, 2] };
+            nodes[3, 3].neighbors = new node[] { nodes[2, 3], nodes[3, 2] };
+            nodes[3, 4].neighbors = new node[] { nodes[3, 5], nodes[4, 4] };
+            nodes[3, 5].neighbors = new node[] { nodes[2, 5], nodes[3, 4] };
+
+            nodes[4, 0].neighbors = new node[] { nodes[5, 0], nodes[4, 1], nodes[3, 0] };
+            nodes[4, 1].neighbors = new node[] { nodes[4, 2], nodes[4, 0] };
+            nodes[4, 2].neighbors = new node[] { nodes[3, 2], nodes[4, 1] };
+            nodes[4, 3].neighbors = new node[] { nodes[5, 3] };
+            nodes[4, 4].neighbors = new node[] { nodes[3, 4], nodes[4, 5] };
+            nodes[4, 5].neighbors = new node[] { nodes[5, 5], nodes[4, 4] };
+
+            nodes[5, 0].neighbors = new node[] { nodes[4, 0], nodes[5, 1] };
+            nodes[5, 1].neighbors = new node[] { nodes[5, 0], nodes[5, 2] };
+            nodes[5, 2].neighbors = new node[] { nodes[5, 1], nodes[5, 3] };
+            nodes[5, 3].neighbors = new node[] { nodes[5, 2], nodes[4, 3], nodes[5, 4] };
+            nodes[5, 4].neighbors = new node[] { nodes[5, 3] };
+            nodes[5, 5].neighbors = new node[] { nodes[4, 5] };
+
+            nodes[2, 1].circle = true;
+            nodes[0, 4].circle = true;
 
             return nodes;
         }
