@@ -24,7 +24,7 @@ namespace BombAssistant
         private void solve()
         {
 
-            if(assistant.getHasVowel() == Assistant.UNKNOWED)
+            if(assistant.getHasVowel() == Assistant.UNKNOWN)
             {
                 talk.speakAsync("Does the serial number contain a vowel?");
                 if (rec.getYesNo())

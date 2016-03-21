@@ -208,7 +208,7 @@ namespace BombAssistant
             if (validate(maze))
                 return maze;
 
-            talk.speakAsync("Maze does not exits. Please repeat module!");
+            talk.speakAsync("Maze does not exists. Please repeat module!");
             running = false;
             return maze;
         }
@@ -458,7 +458,7 @@ namespace BombAssistant
             node[,] nodes = createInitNodes();
 
             nodes[0, 0].neighbors = new node[] { nodes[1, 0] };
-            nodes[0, 1].neighbors = new node[] { nodes[1, 0], nodes[0, 2] };
+            nodes[0, 1].neighbors = new node[] { nodes[1, 1], nodes[0, 2] };
             nodes[0, 2].neighbors = new node[] { nodes[0, 3], nodes[0, 1], nodes[1, 2] };
             nodes[0, 3].neighbors = new node[] { nodes[0, 2], nodes[0, 4] };
             nodes[0, 4].neighbors = new node[] { nodes[0, 3], nodes[0, 5] };

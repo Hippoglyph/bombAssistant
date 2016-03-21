@@ -78,7 +78,7 @@ namespace BombAssistant
             int reds = getNumberOfWireColor(Listener.RED);
             if (reds > 1)
             {
-                if (assistant.getLastDigiOdd() == Assistant.UNKNOWED)
+                if (assistant.getLastDigiOdd() == Assistant.UNKNOWN)
                 {
                     talk.speakAsync("Is the last digit of the serial number odd?");
                     if (rec.getYesNo())
@@ -117,7 +117,7 @@ namespace BombAssistant
         {
             if (input.Last().Equals(Listener.BLACK))
             {
-                if (assistant.getLastDigiOdd() == Assistant.UNKNOWED) {
+                if (assistant.getLastDigiOdd() == Assistant.UNKNOWN) {
                     talk.speakAsync("Is the last digit of the serial number odd?");
                     if (rec.getYesNo())
                     {
@@ -151,7 +151,7 @@ namespace BombAssistant
             int yellows = getNumberOfWireColor(Listener.YELLOW);
             if (yellows == 0)
             {
-                if (assistant.getLastDigiOdd() == Assistant.UNKNOWED)
+                if (assistant.getLastDigiOdd() == Assistant.UNKNOWN)
                 {
                     talk.speakAsync("Is the last digit of the serial number odd?");
                     if (rec.getYesNo())

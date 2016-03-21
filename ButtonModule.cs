@@ -12,6 +12,7 @@ namespace BombAssistant
         public static String ABORT = "abort";
         public static String DETONATE = "detonate";
         public static String HOLD = "hold";
+        public static String PRESS = "press";
 
         Speaker talk;
         Listener rec;
@@ -39,7 +40,7 @@ namespace BombAssistant
             }
             if (text.Equals(DETONATE))
             {
-                if (assistant.getNOFBatteries() == Assistant.UNKNOWED)
+                if (assistant.getNOFBatteries() == Assistant.UNKNOWN)
                 {
                     talk.speakAsync("How many batteries?");
                     assistant.setNOFBatteries(rec.getNumber());
@@ -57,7 +58,7 @@ namespace BombAssistant
             }
             if (color.Equals(Listener.WHITE))
             {
-                if (assistant.getCARIndicator() == Assistant.UNKNOWED)
+                if (assistant.getCARIndicator() == Assistant.UNKNOWN)
                 {
                     talk.speakAsync("Is there a lit indicator labeled CAR?");
                     if (rec.getYesNo())
@@ -74,14 +75,14 @@ namespace BombAssistant
                     return;
                 }
             }
-            if (assistant.getNOFBatteries() == Assistant.UNKNOWED)
+            if (assistant.getNOFBatteries() == Assistant.UNKNOWN)
             {
                 talk.speakAsync("How many batteries?");
                 assistant.setNOFBatteries(rec.getNumber());
             }
             if (assistant.getNOFBatteries() > 2)
             {
-                if (assistant.getFRKIndicator() == Assistant.UNKNOWED)
+                if (assistant.getFRKIndicator() == Assistant.UNKNOWN)
                 {
                     talk.speakAsync("Is there a lit indicator labeled FRK");
                     if (rec.getYesNo())

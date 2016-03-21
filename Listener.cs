@@ -245,14 +245,14 @@ namespace BombAssistant
         /*
             button := button <color> <text>
             color := red | blue | white | yellow | black | green
-            text := abort | detonate | hold
+            text := abort | detonate | hold | press
         */
         private GrammarBuilder createButtonGB()
         {
             Choices color = getColorChoices();
 
             Choices text = new Choices();
-            text.Add(new string[] { ButtonModule.ABORT, ButtonModule.DETONATE, ButtonModule.HOLD });
+            text.Add(new string[] { ButtonModule.ABORT, ButtonModule.DETONATE, ButtonModule.HOLD, ButtonModule.PRESS });
 
             GrammarBuilder gb = new GrammarBuilder(BUTTONSTRING);
             gb.Append(color);

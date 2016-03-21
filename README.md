@@ -38,7 +38,18 @@
 /*
             button := button <color> <text>
             color := red | blue | white | yellow
-            text := abort | detonate | hold
+            text := abort | detonate | hold | press
+*/
+
+/*
+            Set Speak Rate := setSpeakRateString <number>
+            number := -10 | -9 | ... | 8 | 9 | 10
+*/
+
+/*
+            wires := wires <colors>
+            colors := <colors> <color> | <color>
+            color := red | blue | white | yellow | black
 */
 
 /*
@@ -52,15 +63,4 @@
 
 /*
             bool := yes | no | true | false
-*/
-
-/*
-            Set Speak Rate := setSpeakRateString <number>
-            number := -10 | -9 | ... | 8 | 9 | 10
-*/
-
-/*
-            wires := wires <colors>
-            colors := <colors> <color> | <color>
-            color := red | blue | white | yellow | black
 */

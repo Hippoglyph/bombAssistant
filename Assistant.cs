@@ -8,9 +8,11 @@ namespace BombAssistant
 {
     class Assistant
     {
-        public static int UNKNOWED = -1;
+        public static int UNKNOWN = -1;
         public static int FALSE = 0;
         public static int TRUE = 1;
+
+        Random random;
 
         Speaker talk;
         Listener rec;
@@ -24,6 +26,7 @@ namespace BombAssistant
         int hasVowel;
         public Assistant()
         {
+            random = new Random();
             talk = new Speaker();
             rec = new Listener(this);
             init();
@@ -32,11 +35,11 @@ namespace BombAssistant
         private void init()
         {
             strikes = 0;
-            NOFBatteries = UNKNOWED;
-            lastDigitOdd = UNKNOWED;
-            CAR = UNKNOWED;
-            FRK = UNKNOWED;
-            hasVowel = UNKNOWED;
+            NOFBatteries = UNKNOWN;
+            lastDigitOdd = UNKNOWN;
+            CAR = UNKNOWN;
+            FRK = UNKNOWN;
+            hasVowel = UNKNOWN;
         }
         public void start()
         {
@@ -81,31 +84,114 @@ namespace BombAssistant
                 sb.Append(word + " ");
             String answer = sb.ToString().Trim();
             if (answer.Equals(Listener.WIN))
-                talk.speakAsync("We fucking did it man. Mom get the camera!");
+                sayWin();
             else
-                talk.speakAsync("You should have listen, better luck next time");
+                sayLose();
+        }
+
+        private void sayWin()
+        {
+            int i = random.Next(5);
+            switch (i)
+            {
+                case 0:
+                    talk.speakAsync("We fucking did it man. Mom get the camera!");
+                    break;
+                case 1:
+                    talk.speakAsync("We did it, it is finally over!");
+                    break;
+                case 2:
+                    talk.speakAsync("I am proud of you");
+                    break;
+                case 3:
+                    talk.speakAsync("Easy! Call me again if you need any more help");
+                    break;
+                case 4:
+                    talk.speakAsync("We did it. I would say I did most of the work");
+                    break;
+            }
+        }
+
+        private void sayLose()
+        {
+            int i = random.Next(5);
+            switch (i)
+            {
+                case 0:
+                    talk.speakAsync("You should have listen, better luck next time");
+                    break;
+                case 1:
+                    talk.speakAsync("You should have been more clear with your instructions");
+                    break;
+                case 2:
+                    talk.speakAsync("You are a disgrace to your family!");
+                    break;
+                case 3:
+                    talk.speakAsync("Oh! Are you okey?");
+                    break;
+                case 4:
+                    talk.speakAsync("I am sorry, Dave spilt some coffee in my CPU fan during the last module");
+                    break;
+            }
         }
 
         private void intruduce()
         {
-            talk.speak("To your service");
+            int i = random.Next(5);
+            switch (i)
+            {
+                case 0:
+                    talk.speak("To your service");
+                    break;
+                case 1:
+                    talk.speak("What can I do for you?");
+                    break;
+                case 2:
+                    talk.speak("Ready to roll out!");
+                    break;
+                case 3:
+                    talk.speak("Trubble again?");
+                    break;
+                case 4:
+                    talk.speak("Tell me what you see!");
+                    break;
+            }
+            
         }
 
         private void exit()
         {
-            talk.speak("Bye");
+            int i = random.Next(5);
+            switch (i)
+            {
+                case 0:
+                    talk.speak("Bye");
+                    break;
+                case 1:
+                    talk.speak("See ya");
+                    break;
+                case 2:
+                    talk.speak("Goodbye");
+                    break;
+                case 3:
+                    talk.speak("Exiting");
+                    break;
+                case 4:
+                    talk.speak("au revoir");
+                    break;
+            }
             running = false;
         }
 
         private void unkownedCommand()
         {   
-            talk.speakAsync("Unknowned command, please repeat");
+            talk.speakAsync("Unknown command, please repeat");
         }
 
         private void setSpeakRateCommand()
         {
             setSpeakRate();
-            talk.speak("From now on I will speak in this rate, does this please you?");
+            talk.speakAsync("From now on I will speak in this rate, does this please you?");
         }
 
         private void setStrikesCommand()
