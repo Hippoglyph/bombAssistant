@@ -59,6 +59,9 @@ namespace BombAssistant
         public static int MAZESCOMMAND = 11;
         private static String MAZESSTRING = "mazes";
 
+        public static int PASSWORDCOMMAND = 12;
+        private static String PASSWORDSTRING = "password";
+
         SpeechRecognitionEngine rec;
         Assistant assistant;
 
@@ -107,6 +110,7 @@ namespace BombAssistant
 
         /*
             command := <Set Speak Rate> | <button> | exit | <wires> | <keypads> | <Set Strikes> | <Simon Says> | <Whos on First> | <memory> | <reset>
+                        <password>
         */
         private void setCommandGrammar()
         {
@@ -125,12 +129,28 @@ namespace BombAssistant
             commands.Add(createMemoryGB());
             commands.Add(createResetGB());
             commands.Add(createMazesGB());
+            commands.Add(createPasswordGB());
             
             GrammarBuilder commandsGB = new GrammarBuilder(commands);
             commandsGB.Culture = new System.Globalization.CultureInfo("en-GB");
             Grammar gram = new Grammar(commandsGB);
             gram.Name = "Commands";
             rec.LoadGrammar(gram);
+        }
+
+        /*
+            password := password <letters>
+            letters := <letters> letter | letter
+            letter := alfa | bravo | charlie | delta | echo | foxtrot | golf | hotel | india | juliett | kilo | lima | mike | november | oscar |
+                        papa | quebec | romeo | sierra | tango | uniform | victor | whiskey | xray | yankee | zulu
+        */
+
+        private GrammarBuilder createPasswordGB()
+        {
+            Choices militaryLetters = getMilitaryLetterChoises();
+            GrammarBuilder gb = new GrammarBuilder(PASSWORDSTRING);
+            gb.Append(militaryLetters, 1, 10);
+            return gb;
         }
 
         /*
@@ -276,6 +296,41 @@ namespace BombAssistant
         private GrammarBuilder createExitGB()
         {
             return new GrammarBuilder(EXITSTRING);
+        }
+
+        public String[] getLetterSequence()
+        {
+            setMilitaryLetterGrammar();
+
+            RecognitionResult input = rec.Recognize();
+            if (input != null)
+            {
+                List<string> letter = new List<string>();
+                foreach (var letter_ in input.Words)
+                    letter.Add(letter_.Text);
+                assistant.setInput( letter.ToArray() );
+                return letter.ToArray();
+            }
+            assistant.setInput(new string[] { UNRECOGNIZED });
+            return new string[] { UNRECOGNIZED };
+        }
+
+        /*
+            letters := <letters> letter | letter
+            letter := alfa | bravo | charlie | delta | echo | foxtrot | golf | hotel | india | juliett | kilo | lima | mike | november | oscar |
+                        papa | quebec | romeo | sierra | tango | uniform | victor | whiskey | xray | yankee | zulu | exit
+        */
+        private void setMilitaryLetterGrammar()
+        {
+            rec.UnloadAllGrammars();
+            Choices letter = getMilitaryLetterChoises();
+            letter.Add(EXIT);
+
+            GrammarBuilder letterGB = new GrammarBuilder(letter);
+            letterGB.Culture = new System.Globalization.CultureInfo("en-GB");
+            Grammar gram = new Grammar(letterGB);
+            gram.Name = "Military";
+            rec.LoadGrammar(gram);
         }
 
         public String getColor()
@@ -445,6 +500,16 @@ namespace BombAssistant
             return new Choices(new string[] { "q", "w", "e", "r", "t", "y", "u", "i", "o", "p",
                                         "a", "s", "d", "f", "g", "h", "j", "k", "l",
                                         "z", "x", "c", "v", "b", "n", "m", "empty"});
+        }
+
+        private Choices getMilitaryLetterChoises()
+        {
+            Choices letter = new Choices();
+            foreach(String s in assistant.getAllLetters())
+            {
+                letter.Add(s);
+            }
+            return letter;
         }
     }
 }

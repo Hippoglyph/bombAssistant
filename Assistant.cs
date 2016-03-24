@@ -12,6 +12,8 @@ namespace BombAssistant
         public static int FALSE = 0;
         public static int TRUE = 1;
 
+        Dictionary<String, String> militaryLetter;
+
         Random random;
 
         Speaker talk;
@@ -29,7 +31,39 @@ namespace BombAssistant
             random = new Random();
             talk = new Speaker();
             rec = new Listener(this);
+            
             init();
+        }
+
+        private void initMilitary()
+        {
+            militaryLetter = new Dictionary<string, string>(26);
+            militaryLetter.Add("alfa", "a");
+            militaryLetter.Add("bravo", "b");
+            militaryLetter.Add("charlie", "c");
+            militaryLetter.Add("delta", "d");
+            militaryLetter.Add("echo", "e");
+            militaryLetter.Add("foxtrot", "f");
+            militaryLetter.Add("golf", "g");
+            militaryLetter.Add("hotel", "h");
+            militaryLetter.Add("india", "i");
+            militaryLetter.Add("juliett", "j");
+            militaryLetter.Add("kilo", "k");
+            militaryLetter.Add("lima", "l");
+            militaryLetter.Add("mike", "m");
+            militaryLetter.Add("november", "n");
+            militaryLetter.Add("oscar", "o");
+            militaryLetter.Add("papa", "p");
+            militaryLetter.Add("quebec", "q");
+            militaryLetter.Add("romeo", "r");
+            militaryLetter.Add("sierra", "s");
+            militaryLetter.Add("tango", "t");
+            militaryLetter.Add("uniform", "u");
+            militaryLetter.Add("victor", "v");
+            militaryLetter.Add("whiskey", "w");
+            militaryLetter.Add("xray", "x");
+            militaryLetter.Add("yankee", "y");
+            militaryLetter.Add("zulu", "z");
         }
 
         private void init()
@@ -70,6 +104,8 @@ namespace BombAssistant
                     reset();
                 else if (command == Listener.MAZESCOMMAND)
                     new MazesModule(talk, rec);
+                else if (command == Listener.KEYPADCOMMAND)
+                    new PasswordModule(talk, rec, input);
                 else
                     unkownedCommand();
                 Console.WriteLine();
@@ -274,6 +310,19 @@ namespace BombAssistant
         public int getHasVowel()
         {
             return hasVowel;
+        }
+
+        public string[] getAllLetters()
+        {
+            return militaryLetter.Keys.ToArray();
+        }
+
+        public string getLetter(String key)
+        {
+            if (militaryLetter.ContainsKey(key))
+                return militaryLetter[key];
+            else
+                return Listener.ERROR;
         }
     }
 }

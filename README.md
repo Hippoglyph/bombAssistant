@@ -4,6 +4,13 @@
             command := <Set Speak Rate> | <button> | exit | <wires> | <keypads> | <Set Strikes> | <simonsays> | <memory> | <mazes>
 */
 
+ /*
+            password := password <letters>
+            letters := <letters> letter | letter
+            letter := alfa | bravo | charlie | delta | echo | foxtrot | golf | hotel | india | juliett | kilo | lima | mike | november | oscar |
+                        papa | quebec | romeo | sierra | tango | uniform | victor | whiskey | xray | yankee | zulu
+*/
+
 /*
             mazes := mazes
 */
@@ -50,6 +57,12 @@
             wires := wires <colors>
             colors := <colors> <color> | <color>
             color := red | blue | white | yellow | black
+*/
+
+/*
+            letters := <letters> letter | letter
+            letter := alfa | bravo | charlie | delta | echo | foxtrot | golf | hotel | india | juliett | kilo | lima | mike | november | oscar |
+                        papa | quebec | romeo | sierra | tango | uniform | victor | whiskey | xray | yankee | zulu | exit
 */
 
 /*
