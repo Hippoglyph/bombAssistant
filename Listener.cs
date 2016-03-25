@@ -61,7 +61,10 @@ namespace BombAssistant
         private static String MAZESSTRING = "mazes";
 
         public static int PASSWORDCOMMAND = 12;
-        private static String PASSWORDSTRING = "password";
+        private static String PASSWORDSTRING = "passwords";
+
+        public static int WIRESEQUENCESCOMMAND = 13;
+        private static String WIRESEQUENCESSTRING = "wiresequences";
 
         SpeechRecognitionEngine rec;
         Assistant assistant;
@@ -107,6 +110,8 @@ namespace BombAssistant
                     return MAZESCOMMAND;
                 else if (list[0].Equals(PASSWORDSTRING))
                     return PASSWORDCOMMAND;
+                else if (list[0].Equals(WIRESEQUENCESSTRING))
+                    return WIRESEQUENCESCOMMAND;
             }
             return 0;
         }
@@ -133,12 +138,21 @@ namespace BombAssistant
             commands.Add(createResetGB());
             commands.Add(createMazesGB());
             commands.Add(createPasswordGB());
+            commands.Add(createWireSequencesGB());
             
             GrammarBuilder commandsGB = new GrammarBuilder(commands);
             commandsGB.Culture = new System.Globalization.CultureInfo("en-GB");
             Grammar gram = new Grammar(commandsGB);
             gram.Name = "Commands";
             rec.LoadGrammar(gram);
+        }
+
+        /*
+            WireSeqences := wiresequences
+        */
+        private GrammarBuilder createWireSequencesGB()
+        {
+            return new GrammarBuilder(WIRESEQUENCESSTRING);
         }
 
         /*
@@ -161,8 +175,7 @@ namespace BombAssistant
         */
         private GrammarBuilder createMazesGB()
         {
-            GrammarBuilder gb = new GrammarBuilder(MAZESSTRING);
-            return gb;
+            return new GrammarBuilder(MAZESSTRING);
         }
 
         /*
@@ -300,6 +313,47 @@ namespace BombAssistant
         private GrammarBuilder createExitGB()
         {
             return new GrammarBuilder(EXITSTRING);
+        }
+
+        public String[] getWireSequence()
+        {
+            setWireSequenceGrammar();
+
+            RecognitionResult input = rec.Recognize();
+            if (input != null)
+            {
+                assistant.setInput(new string[] { input.Text });
+                List<String> list = new List<string>();
+                foreach (var word in input.Words)
+                    list.Add(word.Text);
+                return list.ToArray();
+            }
+            assistant.setInput(new string[] { UNRECOGNIZED });
+            return new string[] { UNRECOGNIZED };
+        }
+
+        /*
+            wiresequence := done | exit | <color> <letter>
+            color := red | blue | black
+            letter := alfa | bravo | charlie
+        */
+        private void setWireSequenceGrammar()
+        {
+            rec.UnloadAllGrammars();
+            Choices sequence = new Choices(new string[] { "done", EXIT});
+            Choices letters = new Choices(new string[] { "alfa", "bravo", "charlie" });
+            Choices wires = new Choices(new string[] { RED, BLUE, BLACK });
+            GrammarBuilder sequenceGB_ = new GrammarBuilder();
+            sequenceGB_.Append(wires);
+            sequenceGB_.Append(letters);
+            sequenceGB_.Culture = new System.Globalization.CultureInfo("en-GB");
+            sequence.Add(sequenceGB_);
+
+            GrammarBuilder sequenceGB = new GrammarBuilder(sequence);
+            sequenceGB.Culture = new System.Globalization.CultureInfo("en-GB");
+            Grammar gram = new Grammar(sequenceGB);
+            gram.Name = "Sequence";
+            rec.LoadGrammar(gram);
         }
 
         public String[] getLetterSequence()

@@ -27,7 +27,6 @@ namespace BombAssistant
             solve();
         }
 
-
         private void solve()
         {
             //talk.speakAsync("You have a " + input[1] + " " + input[0] + " that says " + input[2]);
@@ -41,21 +40,14 @@ namespace BombAssistant
             if (text.Equals(DETONATE))
             {
                 if (assistant.getNOFBatteries() == Assistant.UNKNOWN)
-                {
-                    talk.speakAsync("How many batteries?");
-                    assistant.setNOFBatteries(rec.getNumber());
-                    if (assistant.getNOFBatteries() > 1)
-                    {
-                        quickRelease();
-                        return;
-                    }
-                }
-                else if (assistant.getNOFBatteries() > 1)
+                    setBatteries();
+                if (assistant.getNOFBatteries() > 1)
                 {
                     quickRelease();
                     return;
                 }
             }
+
             if (color.Equals(Listener.WHITE))
             {
                 if (assistant.getCARIndicator() == Assistant.UNKNOWN)
@@ -77,8 +69,7 @@ namespace BombAssistant
             }
             if (assistant.getNOFBatteries() == Assistant.UNKNOWN)
             {
-                talk.speakAsync("How many batteries?");
-                assistant.setNOFBatteries(rec.getNumber());
+                setBatteries();
             }
             if (assistant.getNOFBatteries() > 2)
             {
@@ -136,6 +127,15 @@ namespace BombAssistant
                 talk.speakAsync("Release when 5 in any position!");
             else
                 talk.speakAsync("Release when 1 in any position!");
+        }
+
+        private void setBatteries()
+        {
+            while(assistant.getNOFBatteries() == Assistant.UNKNOWN)
+            {
+                talk.speakAsync("How many batteries?");
+                assistant.setNOFBatteries(rec.getNumber());
+            }
         }
     }
 }

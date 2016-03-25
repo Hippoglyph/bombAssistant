@@ -106,6 +106,8 @@ namespace BombAssistant
                     new MazesModule(talk, rec);
                 else if (command == Listener.PASSWORDCOMMAND)
                     new PasswordModule(talk, rec, input, this);
+                else if (command == Listener.WIRESEQUENCESCOMMAND)
+                    new WireSequencesModule(talk, rec, this);
                 else
                     unkownedCommand();
                 Console.WriteLine();
