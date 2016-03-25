@@ -10,6 +10,7 @@ namespace BombAssistant
     class Listener
     {
         public static String UNRECOGNIZED = "UNRECOGNIZED";
+        public static String EMPTY = "empty";
         public static String GREEN = "green";
         public static String BLACK = "black";
         public static String RED = "red";
@@ -104,6 +105,8 @@ namespace BombAssistant
                     return RESETCOMMAND;
                 else if (list[0].Equals(MAZESSTRING))
                     return MAZESCOMMAND;
+                else if (list[0].Equals(PASSWORDSTRING))
+                    return PASSWORDCOMMAND;
             }
             return 0;
         }
@@ -194,7 +197,8 @@ namespace BombAssistant
         */
         private GrammarBuilder createWhosOnFirstGB()
         {
-            Choices letters = getLetterChoises();
+            Choices letters = getMilitaryLetterChoises();
+            letters.Add(EMPTY);
             GrammarBuilder gb = new GrammarBuilder(WHOSONFIRSTSTRING);
             gb.Append(letters, 1, 16);
             return gb;
@@ -318,15 +322,17 @@ namespace BombAssistant
         /*
             letters := <letters> letter | letter
             letter := alfa | bravo | charlie | delta | echo | foxtrot | golf | hotel | india | juliett | kilo | lima | mike | november | oscar |
-                        papa | quebec | romeo | sierra | tango | uniform | victor | whiskey | xray | yankee | zulu | exit
+                        papa | quebec | romeo | sierra | tango | uniform | victor | whiskey | xray | yankee | zulu | exit | questionmark | empty
         */
         private void setMilitaryLetterGrammar()
         {
             rec.UnloadAllGrammars();
             Choices letter = getMilitaryLetterChoises();
             letter.Add(EXIT);
+            letter.Add("questionmark");
+            letter.Add(EMPTY);
 
-            GrammarBuilder letterGB = new GrammarBuilder(letter);
+            GrammarBuilder letterGB = new GrammarBuilder(letter, 1 , 10);
             letterGB.Culture = new System.Globalization.CultureInfo("en-GB");
             Grammar gram = new Grammar(letterGB);
             gram.Name = "Military";

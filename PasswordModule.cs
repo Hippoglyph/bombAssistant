@@ -38,7 +38,7 @@ namespace BombAssistant
                 input = rec.getLetterSequence();
                 if (input.Contains(Listener.EXIT))
                 {
-                    talk.speakAsync("Seqence contained EXIT. Ready for new module!");
+                    talk.speakAsync("Sequence contained EXIT. Ready for new module!");
                     return;
                 }
                 while (input.Contains(Listener.UNRECOGNIZED))
@@ -78,13 +78,12 @@ namespace BombAssistant
                 if (!letter.Equals(Listener.ERROR))
                     letters.Add(letter[0]);
             }
-            var passwordList_ = passwordList;
-            foreach(string password in passwordList)
+            string[] passwordList_ = passwordList.ToArray();
+            foreach(string password in passwordList_)
             {
                 if (!validate(password, letters))
-                    passwordList_.Remove(password);
+                    passwordList.Remove(password);
             }
-            passwordList = passwordList_;
         }
 
         private bool validate(string password, List<char> letters)

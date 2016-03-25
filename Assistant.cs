@@ -31,7 +31,7 @@ namespace BombAssistant
             random = new Random();
             talk = new Speaker();
             rec = new Listener(this);
-            
+            initMilitary();
             init();
         }
 
@@ -97,15 +97,15 @@ namespace BombAssistant
                 else if (command == Listener.SIMONSAYSCOMMAND)
                     new SimonSaysModule(talk, rec, input, this);
                 else if (command == Listener.WHOSONFIRSTCOMMAND)
-                    new WhosOnFirstModule(talk, rec, input);
+                    new WhosOnFirstModule(talk, rec, input, this);
                 else if (command == Listener.MEMORYCOMMAND)
                     new MemoryModule(talk, rec, input);
                 else if (command == Listener.RESETCOMMAND)
                     reset();
                 else if (command == Listener.MAZESCOMMAND)
                     new MazesModule(talk, rec);
-                else if (command == Listener.KEYPADCOMMAND)
-                    new PasswordModule(talk, rec, input);
+                else if (command == Listener.PASSWORDCOMMAND)
+                    new PasswordModule(talk, rec, input, this);
                 else
                     unkownedCommand();
                 Console.WriteLine();

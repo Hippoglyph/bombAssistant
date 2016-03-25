@@ -11,11 +11,13 @@ namespace BombAssistant
         Speaker talk;
         Listener rec;
         String[] input;
-        public WhosOnFirstModule(Speaker talk, Listener rec, String[] input)
+        Assistant assistant;
+        public WhosOnFirstModule(Speaker talk, Listener rec, String[] input, Assistant lord)
         {
             this.talk = talk;
             this.rec = rec;
             this.input = input;
+            assistant = lord;
             solve();
         }
 
@@ -37,11 +39,27 @@ namespace BombAssistant
             while (running)
             {
                 talk.speakAsync("What is the word on the " + position + "?");
-                if (validate(rec.getWord()))
+                if (validate(getWord()))
                     return;
                 else
                     talk.speakAsync("Not a word");
             }
+        }
+
+        private string getWord()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach(string militaryLetter in rec.getLetterSequence())
+            {
+                if (militaryLetter.Equals("questionmark") || militaryLetter.Equals(Listener.EMPTY) || militaryLetter.Equals("exit"))
+                    sb.Append(militaryLetter);
+                else {
+                    string letter = assistant.getLetter(militaryLetter);
+                    if (!letter.Equals(Listener.ERROR))
+                        sb.Append(letter);
+                }
+            }
+            return sb.ToString();
         }
 
         private bool validate(string response)
@@ -136,10 +154,14 @@ namespace BombAssistant
 
         private String translateInput()
         {
+            if (input.Contains(Listener.EMPTY))
+                return "empty";
             StringBuilder sb = new StringBuilder();
-            for(int i = 1; i < input.Length; i++)
+            foreach(string militaryLetter in input)
             {
-                sb.Append(input[i]);
+                string letter = assistant.getLetter(militaryLetter);
+                if (!letter.Equals(Listener.ERROR))
+                    sb.Append(letter);
             }
             return sb.ToString();
         }
