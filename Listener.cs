@@ -25,6 +25,8 @@ namespace BombAssistant
         public static String EXIT = "exit";
         public static String WIN = "we did it";
         public static String LOOSE = "we exploded";
+        public static String NEXT = "next";
+        public static String DONE = "done";
 
 
         public static int SETSPEEDCOMMAND = 1;
@@ -65,6 +67,9 @@ namespace BombAssistant
 
         public static int WIRESEQUENCESCOMMAND = 13;
         private static String WIRESEQUENCESSTRING = "wiresequences";
+
+        public static int COMPLICATEDWIRESCOMMAND = 14;
+        private static String COMPLICATEDWIRESSTRING = "complicatedwires";
 
         SpeechRecognitionEngine rec;
         Assistant assistant;
@@ -112,6 +117,8 @@ namespace BombAssistant
                     return PASSWORDCOMMAND;
                 else if (list[0].Equals(WIRESEQUENCESSTRING))
                     return WIRESEQUENCESCOMMAND;
+                else if (list[0].Equals(COMPLICATEDWIRESSTRING))
+                    return COMPLICATEDWIRESCOMMAND;
             }
             return 0;
         }
@@ -139,12 +146,36 @@ namespace BombAssistant
             commands.Add(createMazesGB());
             commands.Add(createPasswordGB());
             commands.Add(createWireSequencesGB());
+            commands.Add(createComplicatedWiresGB());
             
             GrammarBuilder commandsGB = new GrammarBuilder(commands);
             commandsGB.Culture = new System.Globalization.CultureInfo("en-GB");
             Grammar gram = new Grammar(commandsGB);
             gram.Name = "Commands";
             rec.LoadGrammar(gram);
+        }
+
+        /*
+            complicatedWires := complicatedwires <wires>
+            wires := <wire> <wires> | <wire>
+            wire := <led> <colors> <star> next | <led> <colors> <star> done
+            led := led | ""
+            star := star | ""
+            colors := <color> <color> | <color>
+            color := red | blue | white | yellow | black | green
+        */
+        private GrammarBuilder createComplicatedWiresGB()
+        {
+            Choices color = getColorChoices();
+            Choices next = new Choices(new string[] { NEXT, DONE});
+            GrammarBuilder wire = new GrammarBuilder();
+            wire.Append(ComplicatedWiresModule.LED, 0, 1);
+            wire.Append(color, 1, 2);
+            wire.Append(ComplicatedWiresModule.STAR, 0, 1);
+            wire.Append(next);
+            GrammarBuilder gb = new GrammarBuilder(COMPLICATEDWIRESSTRING);
+            gb.Append(wire, 1, 16);
+            return gb;
         }
 
         /*
@@ -340,7 +371,7 @@ namespace BombAssistant
         private void setWireSequenceGrammar()
         {
             rec.UnloadAllGrammars();
-            Choices sequence = new Choices(new string[] { "done", EXIT});
+            Choices sequence = new Choices(new string[] { DONE, EXIT});
             Choices letters = new Choices(new string[] { "alfa", "bravo", "charlie" });
             Choices wires = new Choices(new string[] { RED, BLUE, BLACK });
             GrammarBuilder sequenceGB_ = new GrammarBuilder();

@@ -26,6 +26,7 @@ namespace BombAssistant
         int CAR;
         int FRK;
         int hasVowel;
+        int parallelPort;
         public Assistant()
         {
             random = new Random();
@@ -74,6 +75,7 @@ namespace BombAssistant
             CAR = UNKNOWN;
             FRK = UNKNOWN;
             hasVowel = UNKNOWN;
+            parallelPort = UNKNOWN;
         }
         public void start()
         {
@@ -108,6 +110,8 @@ namespace BombAssistant
                     new PasswordModule(talk, rec, input, this);
                 else if (command == Listener.WIRESEQUENCESCOMMAND)
                     new WireSequencesModule(talk, rec, this);
+                else if (command == Listener.COMPLICATEDWIRESCOMMAND)
+                    new ComplicatedWiresModule(talk, rec, input, this);
                 else
                     unkownedCommand();
                 Console.WriteLine();
@@ -145,7 +149,7 @@ namespace BombAssistant
                     talk.speakAsync("Easy! Call me again if you need any more help");
                     break;
                 case 4:
-                    talk.speakAsync("We did it. I would say I did most of the work");
+                    talk.speakAsync("We did it? I would say I did most of the work");
                     break;
             }
         }
@@ -269,7 +273,7 @@ namespace BombAssistant
             lastDigitOdd = n;
         }
 
-        public int getLastDigiOdd()
+        public int getLastDigitOdd()
         {
             return lastDigitOdd;
         }
@@ -312,6 +316,16 @@ namespace BombAssistant
         public int getHasVowel()
         {
             return hasVowel;
+        }
+
+        public void setParallelPort(int n)
+        {
+            parallelPort = n;
+        }
+
+        public int getParallelPort()
+        {
+            return parallelPort;
         }
 
         public string[] getAllLetters()

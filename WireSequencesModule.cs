@@ -34,7 +34,7 @@ namespace BombAssistant
             while (running)
             {
                 string[] input = rec.getWireSequence();
-                if(input.Contains("done") || input.Contains(Listener.EXIT))
+                if(input.Contains(Listener.DONE) || input.Contains(Listener.EXIT))
                 {
                     talk.speakAsync("Ready for new module!");
                     return;
