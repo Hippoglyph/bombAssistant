@@ -125,7 +125,7 @@ namespace BombAssistant
 
         /*
             command := <Set Speak Rate> | <button> | exit | <wires> | <keypads> | <Set Strikes> | <Simon Says> | <Whos on First> | <memory> | <reset>
-                        <password>
+                        <password> | <complicatedWires>
         */
         private void setCommandGrammar()
         {
@@ -169,9 +169,9 @@ namespace BombAssistant
             Choices color = getColorChoices();
             Choices next = new Choices(new string[] { NEXT, DONE});
             GrammarBuilder wire = new GrammarBuilder();
-            wire.Append(ComplicatedWiresModule.LED, 0, 1);
-            wire.Append(color, 1, 2);
-            wire.Append(ComplicatedWiresModule.STAR, 0, 1);
+            Choices wire_ = new Choices(new string[] { ComplicatedWiresModule.LED, ComplicatedWiresModule.STAR });
+            wire_.Add(color);
+            wire.Append(wire_, 1, 4);
             wire.Append(next);
             GrammarBuilder gb = new GrammarBuilder(COMPLICATEDWIRESSTRING);
             gb.Append(wire, 1, 16);

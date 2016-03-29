@@ -36,9 +36,91 @@ namespace BombAssistant
 
         private void solve()
         {
+            setBatteries();
             setLastDigitOdd();
             setParallelPort();
-            Wire[] wire = getParsedInput();
+            Wire[] wires = getParsedInput();
+            play(wires);
+        }
+
+        private void play(Wire[] wires)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("Follow sequence: ");
+            foreach(Wire wire in wires)
+            {
+                if (cut(wire))
+                    sb.Append("cut, ");
+                else
+                    sb.Append("leave, ");
+            }
+            sb.Remove(sb.Length - 2, 2);
+            talk.speakAsync(sb.ToString());
+        }
+
+        private bool cut(Wire wire)
+        {
+            bool led = wire.led;
+            bool star = wire.star;
+            string[] color = wire.color;
+            if (color.Contains(Listener.RED) && color.Contains(Listener.BLUE) && star && led)
+                return false;
+            else if (color.Contains(Listener.RED) && color.Contains(Listener.BLUE) && star && !led)
+                return ifPP();
+            else if (color.Contains(Listener.RED) && color.Contains(Listener.BLUE) && !star && led)
+                return ifSE();
+            else if (color.Contains(Listener.RED) && color.Contains(Listener.BLUE) && !star && !led)
+                return ifSE();
+            else if (color.Contains(Listener.RED) && !color.Contains(Listener.BLUE) && star && led)
+                return ifB();
+            else if (color.Contains(Listener.RED) && !color.Contains(Listener.BLUE) && star && !led)
+                return true;
+            else if (color.Contains(Listener.RED) && !color.Contains(Listener.BLUE) && !star && led)
+                return ifB();
+            else if (color.Contains(Listener.RED) && !color.Contains(Listener.BLUE) && !star && !led)
+                return ifSE();
+            else if (!color.Contains(Listener.RED) && color.Contains(Listener.BLUE) && star && led)
+                return ifPP();
+            else if (!color.Contains(Listener.RED) && color.Contains(Listener.BLUE) && star && !led)
+                return false;
+            else if (!color.Contains(Listener.RED) && color.Contains(Listener.BLUE) && !star && led)
+                return ifPP();
+            else if (!color.Contains(Listener.RED) && color.Contains(Listener.BLUE) && !star && !led)
+                return ifSE();
+            else if (!color.Contains(Listener.RED) && !color.Contains(Listener.BLUE) && star && led)
+                return ifB();
+            else if (!color.Contains(Listener.RED) && !color.Contains(Listener.BLUE) && star && !led)
+                return true;
+            else if (!color.Contains(Listener.RED) && !color.Contains(Listener.BLUE) && !star && led)
+                return false;
+            else if (!color.Contains(Listener.RED) && !color.Contains(Listener.BLUE) && !star && !led)
+                return true;
+            talk.speakAsync("Fuck this should not happend! Just cut it");
+            return true;
+        }
+
+        private bool ifB()
+        {
+            if (assistant.getNOFBatteries() >= 2)
+                return true;
+            else
+                return false;
+        }
+
+        private bool ifSE()
+        {
+            if (assistant.getLastDigitOdd() == Assistant.TRUE)
+                return false;
+            else
+                return true;
+        }
+
+        private bool ifPP()
+        {
+            if (assistant.getParallelPort() == Assistant.TRUE)
+                return true;
+            else
+                return false;
         }
 
         private Wire[] getParsedInput()
@@ -58,7 +140,12 @@ namespace BombAssistant
                         if (wire.color == null)
                             wire.color = new string[] { input[i] };
                         else
-                            wire.color = new string[] { wire.color[0], input[i] };
+                        {
+                            List<string> colorList = wire.color.ToList();
+                            colorList.Add(input[i]);
+                            wire.color = colorList.ToArray();
+                            //wire.color = new string[] { wire.color[0], input[i] };
+                        }
                     }
                     else
                         break;
@@ -70,20 +157,24 @@ namespace BombAssistant
             return wireList.ToArray();
         }
 
+        private void setBatteries()
+        {
+            while (assistant.getNOFBatteries() == Assistant.UNKNOWN)
+            {
+                talk.speakAsync("How many batteries?");
+                assistant.setNOFBatteries(rec.getNumber());
+            }
+        }
+
         private void setLastDigitOdd()
         {
             if(assistant.getLastDigitOdd() == Assistant.UNKNOWN)
             {
                 talk.speakAsync("Is the last digit of the serial number odd?");
                 if (rec.getYesNo())
-                {
-                    assistant.setInput(new string[] { "yes" });
                     assistant.setLastDigitOdd(Assistant.TRUE);
-                }
-                else {
-                    assistant.setInput(new string[] { "no" });
+                else
                     assistant.setLastDigitOdd(Assistant.FALSE);
-                }
             }
         }
 
@@ -93,14 +184,9 @@ namespace BombAssistant
             {
                 talk.speakAsync("Does the bomb have a parallel port?");
                 if (rec.getYesNo())
-                {
-                    assistant.setInput(new string[] { "yes" });
                     assistant.setParallelPort(Assistant.TRUE);
-                }
-                else {
-                    assistant.setInput(new string[] { "no" });
+                else
                     assistant.setParallelPort(Assistant.FALSE);
-                }
             }
         }
     }
