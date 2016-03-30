@@ -112,6 +112,8 @@ namespace BombAssistant
                     new WireSequencesModule(talk, rec, this);
                 else if (command == Listener.COMPLICATEDWIRESCOMMAND)
                     new ComplicatedWiresModule(talk, rec, input, this);
+                else if (command == Listener.MORSECODECOMMAND)
+                    new MorseCodeModule(talk, rec, input, this);
                 else
                     unkownedCommand();
                 Console.WriteLine();

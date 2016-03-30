@@ -5,6 +5,11 @@
 
 ************
 
+            morse code := morsecode | morsecode <letterSequence>
+            letterSequence := letter next
+            letter := <dot> <letter> | <dot>
+            dot := short | long
+
             complicatedWires := complicatedwires <wires>
             wires := <wire> <wires> | <wire>
             wire := <led> <colors> <star> next | <led> <colors> <star> done
@@ -51,6 +56,10 @@
 
 
 ************
+
+            morseLetter := <dot> <morseLetter | <dot>
+            dot := long | short | exit
+
             wiresequence := done | exit | <color> <letter>
             color := red | blue | black
             letter := alfa | bravo | charlie

@@ -71,6 +71,9 @@ namespace BombAssistant
         public static int COMPLICATEDWIRESCOMMAND = 14;
         private static String COMPLICATEDWIRESSTRING = "complicatedwires";
 
+        public static int MORSECODECOMMAND = 15;
+        private static String MORSECODESTRING = "morsecode";
+
         SpeechRecognitionEngine rec;
         Assistant assistant;
 
@@ -119,13 +122,15 @@ namespace BombAssistant
                     return WIRESEQUENCESCOMMAND;
                 else if (list[0].Equals(COMPLICATEDWIRESSTRING))
                     return COMPLICATEDWIRESCOMMAND;
+                else if (list[0].Equals(MORSECODESTRING))
+                    return MORSECODECOMMAND;
             }
             return 0;
         }
 
         /*
             command := <Set Speak Rate> | <button> | exit | <wires> | <keypads> | <Set Strikes> | <Simon Says> | <Whos on First> | <memory> | <reset>
-                        <password> | <complicatedWires>
+                        <password> | <complicatedWires> | <morse code>
         */
         private void setCommandGrammar()
         {
@@ -147,12 +152,30 @@ namespace BombAssistant
             commands.Add(createPasswordGB());
             commands.Add(createWireSequencesGB());
             commands.Add(createComplicatedWiresGB());
+            commands.Add(createMorseCodeGB());
             
             GrammarBuilder commandsGB = new GrammarBuilder(commands);
             commandsGB.Culture = new System.Globalization.CultureInfo("en-GB");
             Grammar gram = new Grammar(commandsGB);
             gram.Name = "Commands";
             rec.LoadGrammar(gram);
+        }
+
+        /*
+            morse code := morsecode | morsecode <letterSequence>
+            letterSequence := letter next
+            letter := <dot> <letter> | <dot>
+            dot := short | long
+        */
+        private GrammarBuilder createMorseCodeGB()
+        {
+            Choices dot = new Choices(new string[] { MorseCodeModule.LONG, MorseCodeModule.SHORT});
+            GrammarBuilder letter = new GrammarBuilder();
+            letter.Append(dot, 1, 4);
+            letter.Append(NEXT);
+            GrammarBuilder gb = new GrammarBuilder(MORSECODESTRING);
+            gb.Append(letter, 0, 6);
+            return gb;
         }
 
         /*
@@ -344,6 +367,38 @@ namespace BombAssistant
         private GrammarBuilder createExitGB()
         {
             return new GrammarBuilder(EXITSTRING);
+        }
+
+        public String[] getMorseLetter()
+        {
+            setMorseLetterGrammar();
+
+            RecognitionResult input = rec.Recognize();
+            if (input != null)
+            {
+                assistant.setInput(new string[] { input.Text });
+                List<String> list = new List<string>();
+                foreach (var word in input.Words)
+                    list.Add(word.Text);
+                return list.ToArray();
+            }
+            assistant.setInput(new string[] { UNRECOGNIZED });
+            return new string[] { UNRECOGNIZED };
+        }
+
+        /*
+            morseLetter := <dot> <morseLetter | <dot>
+            dot := long | short | exit
+        */
+        private void setMorseLetterGrammar()
+        {
+            rec.UnloadAllGrammars();
+            Choices dot = new Choices(new string[] { MorseCodeModule.LONG, MorseCodeModule.SHORT, EXIT });
+            GrammarBuilder letterGB = new GrammarBuilder(dot, 1, 4);
+            letterGB.Culture = new System.Globalization.CultureInfo("en-GB");
+            Grammar gram = new Grammar(letterGB);
+            gram.Name = "Morse Letter";
+            rec.LoadGrammar(gram);
         }
 
         public String[] getWireSequence()

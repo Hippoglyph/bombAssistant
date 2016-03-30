@@ -36,15 +36,15 @@ namespace BombAssistant
                 sequenceNumber++;
                 talk.speakAsync("Say sequence " + sequenceNumber + "!");
                 input = rec.getLetterSequence();
-                if (input.Contains(Listener.EXIT))
-                {
-                    talk.speakAsync("Sequence contained EXIT. Ready for new module!");
-                    return;
-                }
                 while (input.Contains(Listener.UNRECOGNIZED))
                 {
                     talk.speakAsync("Repeat!");
                     input = rec.getLetterSequence();
+                }
+                if (input.Contains(Listener.EXIT))
+                {
+                    talk.speakAsync("Sequence contained EXIT. Ready for new module!");
+                    return;
                 }
             }
         }
