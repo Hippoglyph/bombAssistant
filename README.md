@@ -1,7 +1,7 @@
 # bombAssistant
 
             command := <Set Speak Rate> | <button> | exit | <wires> | <keypads> | <Set Strikes> | <Simon Says> | <Whos on First> | <memory> | <reset>
-                        <password> <complicatedWires>
+                        <password> | <complicatedWires> | <morse code>
 
 ************
 
@@ -18,7 +18,9 @@
             colors := <color> <color> | <color>
             color := red | blue | white | yellow | black | green
 
-	    wireseqences := wiresequences
+        
+            WireSeqences := wiresequences
+        
 
             password := password <letters>
             letters := <letters> letter | letter
