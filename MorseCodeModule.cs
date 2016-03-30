@@ -64,6 +64,7 @@ namespace BombAssistant
                         talk.speakAsync("Repeat!");
                         answer = rec.getMorseLetter();
                     }
+                    letter = translateLetter(answer);
                 }
                 options = removeOption(options, index, letter);
                 index++;
